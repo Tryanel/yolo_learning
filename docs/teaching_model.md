@@ -2,7 +2,7 @@
 
 This repository is designed as a lab course, not a loose collection of notes.
 
-It borrows the useful habits of MIT-style systems labs:
+It borrows the useful habits of rigorous lab-based systems courses:
 
 - A schedule that pairs reading with a lab.
 - A lab README with goals, background, tasks, hints, grading, and submission.
@@ -11,9 +11,9 @@ It borrows the useful habits of MIT-style systems labs:
 - A hand-in command that packages only the relevant artifacts.
 - A course textbook that explains the concepts in the same order as the labs.
 
-## What Is Different From MIT 6.S081
+## What This Course Teaches
 
-This course does not ask you to modify a kernel. It asks you to build a small computer vision system. The same learning posture still applies: run real commands, inspect outputs, write down failures, and make each lab reproducible.
+This course asks you to build a small computer vision system. The learning posture is practical: run real commands, inspect outputs, write down failures, and make each lab reproducible.
 
 ## Course Commands
 
@@ -45,4 +45,3 @@ For a classroom:
 - Require `time.txt` to keep workload honest.
 - Ask students to demo failure cases, not only success cases.
 - Use Lab 08 as a portfolio artifact.
-

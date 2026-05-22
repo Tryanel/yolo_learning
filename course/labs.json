@@ -1,7 +1,7 @@
 {
   "course": {
     "title": "YOLO Learning Lab",
-    "style": "lab-driven, MIT 6.S081-inspired",
+    "style": "lab-driven, reproducible hand-in workflow",
     "command": "python tools/course.py"
   },
   "labs": [
@@ -143,4 +143,3 @@
     }
   ]
 }
-

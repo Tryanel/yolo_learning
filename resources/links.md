@@ -12,11 +12,6 @@
 - Object Detection Datasets: https://docs.ultralytics.com/datasets/detect/
 - Command Line Interface: https://docs.ultralytics.com/usage/cli/
 
-## Course Design References
-
-- MIT 6.S081 schedule: https://pdos.csail.mit.edu/6.S081/2020/schedule.html
-- MIT 6.S081 sample lab hand-in convention: https://pdos.csail.mit.edu/6.S081/2020/labs/util.html
-
 ## Papers
 
 - YOLO original paper: https://arxiv.org/abs/1506.02640

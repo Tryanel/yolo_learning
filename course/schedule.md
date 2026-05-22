@@ -1,6 +1,6 @@
 # Course Schedule
 
-This course follows a lab-first style inspired by systems courses such as MIT 6.S081: each week has a reading target, a concrete lab, a grading command, and a small hand-in artifact. The subject is different, but the habit is the same: learn by making a real system behave.
+This course follows a lab-first style: each week has a reading target, a concrete lab, a grading command, and a small hand-in artifact. The habit is simple: learn by making a real system behave.
 
 Primary Chinese reading: [docs/textbook/yolo_model_textbook_zh.md](../docs/textbook/yolo_model_textbook_zh.md)  
 English reference: [docs/textbook/yolo_model_textbook.md](../docs/textbook/yolo_model_textbook.md)

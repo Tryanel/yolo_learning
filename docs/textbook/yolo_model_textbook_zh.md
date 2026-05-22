@@ -883,6 +883,4 @@ YOLO：You Only Look Once，一类实时目标检测模型。
 - Ultralytics Object Detection Dataset Format: https://docs.ultralytics.com/datasets/detect
 - Ultralytics CLI Usage: https://docs.ultralytics.com/usage/cli
 - Original YOLO paper: https://arxiv.org/abs/1506.02640
-- MIT 6.S081 schedule and lab style reference: https://pdos.csail.mit.edu/6.S081/2020/schedule.html
-- MIT 6.S081 sample lab hand-in convention: https://pdos.csail.mit.edu/6.S081/2020/labs/util.html
-
+- 实验驱动课程设计模式：阅读材料、实验说明、评分命令和提交产物
