@@ -1,0 +1,11 @@
+# Copy this file to data/yolo_dataset/dataset.yaml and edit it.
+path: data/yolo_dataset
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: phone
+  1: cup
+  2: mouse
+

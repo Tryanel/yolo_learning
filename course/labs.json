@@ -1,0 +1,146 @@
+{
+  "course": {
+    "title": "YOLO Learning Lab",
+    "style": "lab-driven, MIT 6.S081-inspired",
+    "command": "python tools/course.py"
+  },
+  "labs": [
+    {
+      "id": "lab00",
+      "week": 1,
+      "title": "Local Environment and Course Tools",
+      "points": 100,
+      "required_files": [
+        "submissions/lab00/environment.md",
+        "submissions/lab00/time.txt"
+      ],
+      "checks": [
+        { "type": "no_placeholder", "path": "submissions/lab00/environment.md" },
+        { "type": "contains_any", "path": "submissions/lab00/environment.md", "needles": ["Python", "Ultralytics", "CUDA", "CPU", "Colab"] },
+        { "type": "integer_hours", "path": "submissions/lab00/time.txt" }
+      ]
+    },
+    {
+      "id": "lab01",
+      "week": 2,
+      "title": "Detection Geometry: Boxes, IoU, and NMS",
+      "points": 100,
+      "required_files": [
+        "submissions/lab01/iou_exercises.md",
+        "submissions/lab01/time.txt"
+      ],
+      "checks": [
+        { "type": "no_placeholder", "path": "submissions/lab01/iou_exercises.md" },
+        { "type": "contains_any", "path": "submissions/lab01/iou_exercises.md", "needles": ["IoU", "NMS", "confidence", "threshold"] },
+        { "type": "integer_hours", "path": "submissions/lab01/time.txt" }
+      ]
+    },
+    {
+      "id": "lab02",
+      "week": 3,
+      "title": "Pretrained Prediction on a Weak Local Machine",
+      "points": 100,
+      "required_files": [
+        "submissions/lab02/predict_report.md",
+        "submissions/lab02/time.txt"
+      ],
+      "checks": [
+        { "type": "no_placeholder", "path": "submissions/lab02/predict_report.md" },
+        { "type": "contains_any", "path": "submissions/lab02/predict_report.md", "needles": ["conf", "imgsz", "false positive", "误检", "漏检"] },
+        { "type": "integer_hours", "path": "submissions/lab02/time.txt" }
+      ]
+    },
+    {
+      "id": "lab03",
+      "week": 4,
+      "title": "YOLO Dataset Construction and Audit",
+      "points": 100,
+      "required_files": [
+        "submissions/lab03/dataset_audit.md",
+        "data/yolo_dataset/dataset.yaml",
+        "submissions/lab03/time.txt"
+      ],
+      "checks": [
+        { "type": "no_placeholder", "path": "submissions/lab03/dataset_audit.md" },
+        { "type": "dataset_yaml", "path": "data/yolo_dataset/dataset.yaml" },
+        { "type": "integer_hours", "path": "submissions/lab03/time.txt" }
+      ]
+    },
+    {
+      "id": "lab04",
+      "week": 5,
+      "title": "Cloud Training and Experiment Logging",
+      "points": 100,
+      "required_files": [
+        "submissions/lab04/cloud_training_log.md",
+        "submissions/lab04/time.txt"
+      ],
+      "checks": [
+        { "type": "no_placeholder", "path": "submissions/lab04/cloud_training_log.md" },
+        { "type": "contains_any", "path": "submissions/lab04/cloud_training_log.md", "needles": ["Colab", "best.pt", "epochs", "mAP", "precision", "recall"] },
+        { "type": "integer_hours", "path": "submissions/lab04/time.txt" }
+      ]
+    },
+    {
+      "id": "lab05",
+      "week": 6,
+      "title": "Validation, Error Analysis, and Dataset Iteration",
+      "points": 100,
+      "required_files": [
+        "submissions/lab05/error_analysis.md",
+        "submissions/lab05/time.txt"
+      ],
+      "checks": [
+        { "type": "no_placeholder", "path": "submissions/lab05/error_analysis.md" },
+        { "type": "contains_any", "path": "submissions/lab05/error_analysis.md", "needles": ["漏检", "误检", "box", "class", "next dataset"] },
+        { "type": "integer_hours", "path": "submissions/lab05/time.txt" }
+      ]
+    },
+    {
+      "id": "lab06",
+      "week": 7,
+      "title": "Export and Lightweight Inference",
+      "points": 100,
+      "required_files": [
+        "submissions/lab06/export_report.md",
+        "submissions/lab06/time.txt"
+      ],
+      "checks": [
+        { "type": "no_placeholder", "path": "submissions/lab06/export_report.md" },
+        { "type": "contains_any", "path": "submissions/lab06/export_report.md", "needles": ["ONNX", "OpenVINO", "CPU", "latency", "FPS", "export"] },
+        { "type": "integer_hours", "path": "submissions/lab06/time.txt" }
+      ]
+    },
+    {
+      "id": "lab07",
+      "week": 8,
+      "title": "Hosted Demo and Deployment Tradeoffs",
+      "points": 100,
+      "required_files": [
+        "submissions/lab07/deployment_report.md",
+        "submissions/lab07/time.txt"
+      ],
+      "checks": [
+        { "type": "no_placeholder", "path": "submissions/lab07/deployment_report.md" },
+        { "type": "contains_any", "path": "submissions/lab07/deployment_report.md", "needles": ["Hugging Face", "Roboflow", "API", "demo", "license"] },
+        { "type": "integer_hours", "path": "submissions/lab07/time.txt" }
+      ]
+    },
+    {
+      "id": "lab08",
+      "week": 9,
+      "title": "Final Project: A Reproducible YOLO System",
+      "points": 100,
+      "required_files": [
+        "submissions/lab08/final_project.md",
+        "submissions/lab08/time.txt"
+      ],
+      "checks": [
+        { "type": "no_placeholder", "path": "submissions/lab08/final_project.md" },
+        { "type": "contains_all", "path": "submissions/lab08/final_project.md", "needles": ["Problem", "Dataset", "Training", "Evaluation", "Demo", "Next"] },
+        { "type": "integer_hours", "path": "submissions/lab08/time.txt" }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,43 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.vscode/
+
+# Local secrets
+.env
+
+# Generated YOLO and experiment outputs
+runs/
+outputs/*
+!outputs/.gitkeep
+handin/*.tar.gz
+
+# Local datasets and large artifacts
+data/raw/*
+!data/raw/.gitkeep
+data/samples/*
+!data/samples/.gitkeep
+data/yolo_dataset/images/train/*
+!data/yolo_dataset/images/train/.gitkeep
+data/yolo_dataset/images/val/*
+!data/yolo_dataset/images/val/.gitkeep
+data/yolo_dataset/images/test/*
+!data/yolo_dataset/images/test/.gitkeep
+data/yolo_dataset/labels/train/*
+!data/yolo_dataset/labels/train/.gitkeep
+data/yolo_dataset/labels/val/*
+!data/yolo_dataset/labels/val/.gitkeep
+data/yolo_dataset/labels/test/*
+!data/yolo_dataset/labels/test/.gitkeep
+
+*.pt
+*.pth
+*.onnx
+*.engine
+*.tflite
+*.mlpackage
+*.mlmodel

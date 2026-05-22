@@ -1,0 +1,9 @@
+# Replace this starter file during Lab 03.
+path: data/yolo_dataset
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: TODO_class_name
+
