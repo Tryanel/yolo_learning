@@ -8,6 +8,8 @@ Run pretrained YOLO prediction locally in the lightest useful way. The aim is no
 
 Ultralytics YOLO prediction accepts many source types: image files, folders, URLs, videos, arrays, and webcam index `0`. For weak machines, start with image folders, small input sizes, and nano weights.
 
+![YOLO object detection pipeline](../../docs/assets/yolo_pipeline.svg)
+
 ## Tasks
 
 1. Put 5-10 small images in `data/samples/`.
@@ -44,4 +46,3 @@ python tools/course.py grade lab02
 ```powershell
 python tools/course.py handin lab02
 ```
-

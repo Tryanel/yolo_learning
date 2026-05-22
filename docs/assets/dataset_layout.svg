@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">YOLO dataset layout</title>
+  <desc id="desc">A folder tree showing image folders, label folders, and dataset.yaml.</desc>
+  <style>
+    .bg{fill:#fffdf7}.ink{fill:#172026}.muted{fill:#667085}.teal{fill:#0f766e}.mint{fill:#e8f5f1}.orange{fill:#fff1e8}.line{stroke:#d8cdb8;stroke-width:2}
+    .title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.label{font:700 22px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}
+    .body{font:17px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.code{font:18px Consolas,monospace;fill:#16324f}
+    .folder{fill:#f7f3ea;stroke:#d8cdb8;stroke-width:2}.yaml{fill:#e8f5f1;stroke:#9de0d3;stroke-width:2}
+  </style>
+  <rect class="bg" width="1200" height="640"/>
+  <text x="70" y="70" class="title">YOLO 数据集结构</text>
+  <text x="70" y="106" class="body">图片和标签必须成对组织，dataset.yaml 是训练入口。</text>
+  <g transform="translate(90,160)">
+    <rect class="folder" x="0" y="0" width="450" height="390" rx="18"/>
+    <text x="32" y="48" class="label">data/yolo_dataset/</text>
+    <line x1="58" y1="80" x2="58" y2="330" class="line"/>
+    <text x="88" y="102" class="code">images/</text>
+    <text x="128" y="142" class="code">train/</text>
+    <text x="128" y="182" class="code">val/</text>
+    <text x="128" y="222" class="code">test/</text>
+    <text x="88" y="282" class="code">labels/</text>
+    <text x="128" y="322" class="code">train/ val/ test/</text>
+  </g>
+  <g transform="translate(640,160)">
+    <rect class="yaml" width="430" height="390" rx="18"/>
+    <text x="32" y="48" class="label">dataset.yaml</text>
+    <text x="38" y="98" class="code">path: data/yolo_dataset</text>
+    <text x="38" y="138" class="code">train: images/train</text>
+    <text x="38" y="178" class="code">val: images/val</text>
+    <text x="38" y="218" class="code">test: images/test</text>
+    <text x="38" y="278" class="code">names:</text>
+    <text x="72" y="318" class="code">0: phone</text>
+    <text x="72" y="358" class="code">1: cup</text>
+  </g>
+  <path d="M550 350 C585 350 600 350 630 350" stroke="#f36f45" stroke-width="5" fill="none"/>
+  <polygon points="630,350 612,340 612,360" fill="#f36f45"/>
+</svg>

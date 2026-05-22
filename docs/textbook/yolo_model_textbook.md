@@ -20,7 +20,8 @@ This textbook is the reading companion for YOLO Learning Lab. It is written for 
 - Appendix A: Formulas
 - Appendix B: Command Reference
 - Appendix C: Glossary
-- Appendix D: References
+- Appendix D: Study Questions
+- Appendix E: References
 
 ---
 
@@ -36,6 +37,8 @@ YOLO is easiest to learn when you stop treating it as a mysterious neural networ
 6. Deployment constraints decide how the model is used.
 
 This book follows that system order. Each chapter maps to a lab:
+
+![Lab-driven learning loop](../assets/lab_workflow.svg)
 
 | Chapter | Lab | Main Skill |
 | --- | --- | --- |
@@ -58,6 +61,22 @@ The most important habit is recording evidence. When something fails, write down
 
 That habit is what turns random experimentation into engineering.
 
+### Where to Slow Down
+
+You do not need to understand every neural-network layer on day one. You do need three practical instincts.
+
+First, build input-output instinct. Know what files the model reads, what files it writes, and what each number in the output means.
+
+Second, build data instinct. Learn to see whether classes are visually clear, labels are consistent, and validation images resemble the real use case.
+
+Third, build experiment instinct. When a result changes, you should be able to explain what likely caused it. If you change the dataset, model size, image size, epoch count, and confidence threshold all at once, the result may improve but you will not know why.
+
+Whenever you run a command, ask:
+
+- What is the input?
+- Where will the output be written?
+- If the result is bad, should I inspect data, parameters, or deployment environment first?
+
 ---
 
 ## Chapter 1: The Computer Vision Problem
@@ -78,6 +97,35 @@ YOLO is most famous for object detection. In object detection, the model must so
 - Localization: where is the object?
 
 This is why detection is harder than classification. A classifier can be right with one label. A detector must be right about class and position for every visible object.
+
+### From Pixels to Structured Output
+
+An image is a grid of numbers. A color image usually has red, green, and blue channels. Humans see cups, screens, reflections, and shadows; the model starts with numeric intensity values.
+
+A vision network gradually turns low-level signals into higher-level clues:
+
+```text
+pixel values -> edges/colors -> texture -> parts -> objects -> class and location
+```
+
+Object detection output is not a sentence. It is closer to a table:
+
+| class | confidence | x_center | y_center | width | height |
+| --- | --- | --- | --- | --- | --- |
+| cup | 0.91 | 0.52 | 0.48 | 0.18 | 0.31 |
+| phone | 0.77 | 0.71 | 0.62 | 0.20 | 0.12 |
+
+Each row is a candidate object. Confidence filtering, NMS, and metrics all operate on these candidate rows.
+
+### Classification, Detection, and Segmentation
+
+If your question is "is there a helmet in this image?", classification may be enough.
+
+If your question is "where is each helmet, and who is missing one?", detection is the right first tool.
+
+If your question is "which exact pixels belong to the helmet?", segmentation is more appropriate.
+
+YOLO family models can support multiple vision tasks. This course starts with detection because it exposes the full engineering loop: annotation, training, validation, error analysis, export, and deployment.
 
 ### What Counts as an Object?
 
@@ -101,6 +149,8 @@ Poor beginner classes often have:
 ### Local-Light Strategy
 
 Training can be expensive. This course assumes your local computer may be weak, so you should split work:
+
+![Local-light and cloud-heavy workflow](../assets/local_cloud_workflow.svg)
 
 - Local: code, notes, sample prediction, dataset organization.
 - Cloud: training, heavy validation, hosted demo.
@@ -126,6 +176,41 @@ class_id x_center y_center width height
 
 All four numbers are ratios from 0 to 1. If an image is 1000 px wide and the box center is at x=500 px, normalized `x_center` is `0.5`.
 
+### Pixel-to-YOLO Example
+
+Assume an image is `1280 x 720`. A cup has this pixel box:
+
+```text
+top-left = (384, 180)
+bottom-right = (640, 540)
+```
+
+First compute center and size in pixels:
+
+```text
+x_center_px = (384 + 640) / 2 = 512
+y_center_px = (180 + 540) / 2 = 360
+width_px = 640 - 384 = 256
+height_px = 540 - 180 = 360
+```
+
+Then divide by image width and height:
+
+```text
+x_center = 512 / 1280 = 0.400
+y_center = 360 / 720 = 0.500
+width = 256 / 1280 = 0.200
+height = 360 / 720 = 0.500
+```
+
+If the cup class id is `1`, the YOLO label line is:
+
+```text
+1 0.400 0.500 0.200 0.500
+```
+
+Many beginner dataset bugs come from mixing `xyxy` with `xywh`, forgetting normalization, or swapping image width and height.
+
 ### Intersection over Union
 
 IoU measures how much two boxes overlap:
@@ -141,6 +226,17 @@ IoU is used for:
 - deciding whether a prediction matches a ground-truth box
 - evaluating box quality
 - removing duplicate predictions during NMS
+
+### A Numeric IoU Example
+
+Suppose two boxes each have area `100`, and their overlap area is `60`. The union is not `200`, because the overlap was counted twice:
+
+```text
+union = 100 + 100 - 60 = 140
+IoU = 60 / 140 = 0.429
+```
+
+So two boxes can look meaningfully overlapped while still having IoU below `0.5`. When you see `mAP50` or an `IoU=0.5` matching rule, it is asking whether the predicted box overlaps the true box by at least that threshold.
 
 ### Confidence
 
@@ -171,6 +267,25 @@ The rough logic is:
 
 NMS helps with duplicates, but it cannot fix a bad class definition or missing training data.
 
+![Bounding boxes, IoU, and NMS](../assets/box_iou_nms.svg)
+
+### Understanding Thresholds
+
+YOLO prediction commonly exposes a confidence threshold and an IoU threshold.
+
+`conf` decides whether a candidate is confident enough to keep. Raise it and the model reports fewer boxes. Lower it and the model reports more boxes.
+
+The NMS IoU threshold decides how much overlap counts as a duplicate. If it is too low, two nearby real objects may collapse into one. If it is too high, duplicate boxes may remain.
+
+Treat thresholds as application choices, not magic constants:
+
+| Setting | Typical effect | Useful when |
+| --- | --- | --- |
+| Lower `conf` | More detections, more false positives | Missing objects is expensive |
+| Higher `conf` | Fewer detections, more conservative | False positives are expensive |
+| Lower NMS `iou` | Fewer duplicate boxes, possible merging | Objects are sparse |
+| Higher NMS `iou` | Nearby objects are preserved, duplicates may remain | Objects are dense |
+
 ---
 
 ## Chapter 3: What YOLO Is Really Doing
@@ -182,6 +297,8 @@ Modern YOLO implementations differ from the original paper, but the practical in
 ```text
 image -> model -> boxes + classes + scores
 ```
+
+![YOLO object detection pipeline](../assets/yolo_pipeline.svg)
 
 ### The Model as a Pipeline
 
@@ -195,6 +312,26 @@ A YOLO model has several conceptual parts:
 You do not need to implement these parts in this beginner course. You do need to know where errors can come from.
 
 If small objects are missed, the issue may involve feature scale, input resolution, training data, or annotation quality. If classes are confused, the issue may be class definitions, label noise, or insufficient examples.
+
+### Feature Map Intuition
+
+The model does not judge every original pixel independently. It converts the image into smaller, more abstract feature maps. You can think of feature maps as clue maps: some respond to edges, some to texture, and some to shape combinations.
+
+Large objects can often be recognized on low-resolution, semantic features. Small objects need more fine detail. Multi-scale fusion connects those two needs:
+
+```text
+small objects need detail; large objects need semantics; multi-scale fusion joins them
+```
+
+### What Training Learns
+
+Training is not simply memorizing images. The model repeatedly adjusts parameters so its predictions become closer to the labels. A training example contributes several kinds of error:
+
+- Class error: the object category is wrong.
+- Box error: the predicted box does not overlap the true box enough.
+- Confidence error: the model is too confident where no object exists, or not confident enough where one does.
+
+These errors become a training loss. A lower loss usually means the model fits the training data better, but it does not guarantee generalization. That is why validation metrics and error cases matter.
 
 ### Pretrained Weights
 
@@ -216,6 +353,16 @@ Beginner rule:
 1. Start with nano.
 2. Fix data and labels.
 3. Only then try a larger model.
+
+### Do Not Over-Optimize the Version Question
+
+YOLO is a family, not one fixed file. Implementations differ in layers, training recipes, export support, and naming. At the beginner stage, chasing the newest version is less important than mastering the workflow:
+
+```text
+define data -> label -> train -> validate -> analyze errors -> export -> deploy
+```
+
+Once that workflow is clear, switching implementations is a manageable engineering task rather than a restart.
 
 ---
 
@@ -239,6 +386,12 @@ Example:
 python scripts/predict_image.py --source data/samples --model yolo11n.pt --imgsz 320 --conf 0.25
 ```
 
+Read the command in pieces:
+
+- `--source data/samples`: where to read images from.
+- `--model yolo11n.pt`: which pretrained weights to use.
+- `--imgsz 320 --conf 0.25`: how large the input should be and how confident a detection must be to remain.
+
 If your machine is weak:
 
 - use a nano model
@@ -257,6 +410,39 @@ A prediction image is not enough. For each result, ask:
 - Does confidence match visual certainty?
 
 The model is not a judge. You are the judge.
+
+### Reading the Output Folder
+
+A prediction run usually produces:
+
+- rendered images with boxes, useful for human inspection
+- labels or JSON, useful for downstream code
+- logs, useful for model, image size, speed, and output path
+
+Inspect in this order:
+
+1. Confirm the command read the intended images.
+2. Confirm the output folder was created.
+3. Open 5-10 rendered predictions.
+4. Only then decide whether to change `conf`, `imgsz`, or model size.
+
+If the source path is wrong, the rest of the result is noise.
+
+### A Small Parameter Experiment
+
+Run the same images three ways:
+
+```powershell
+python scripts/predict_image.py --source data/samples --model yolo11n.pt --imgsz 320 --conf 0.15
+python scripts/predict_image.py --source data/samples --model yolo11n.pt --imgsz 320 --conf 0.50
+python scripts/predict_image.py --source data/samples --model yolo11n.pt --imgsz 640 --conf 0.25
+```
+
+Then compare:
+
+- Did lower `conf` add false positives?
+- Did higher `conf` miss objects?
+- Did larger `imgsz` help small objects while slowing prediction?
 
 ### Common First Observations
 
@@ -277,6 +463,8 @@ That is normal. It tells you why custom data matters.
 A YOLO dataset has images, label text files, and a YAML config.
 
 Typical structure:
+
+![YOLO dataset folder structure](../assets/dataset_layout.svg)
 
 ```text
 data/yolo_dataset/
@@ -318,6 +506,19 @@ Each line means:
 class_id x_center y_center width height
 ```
 
+### How Images and Labels Match
+
+YOLO pairs images and labels by matching filenames:
+
+```text
+images/train/desk_001.jpg
+labels/train/desk_001.txt
+```
+
+For an image with no target objects, an empty `.txt` file is often the clearest signal: this image was checked and intentionally has no boxes.
+
+If a label filename is misspelled, the model cannot infer your intent. Many training problems are file relationship problems, not model problems.
+
 ### Train / Val / Test Split
 
 Training set teaches the model. Validation set helps you monitor generalization. Test set is held for final evaluation.
@@ -348,6 +549,32 @@ Annotation rules should be written down. For example:
 - Label a cup even if partially occluded, if at least 30% is visible.
 - Do not label objects smaller than 12 pixels unless the project requires tiny objects.
 
+### Annotation Boundary Details
+
+A useful rule is: box the visible outer rectangle of the target, include as little background as possible, and do not cut off visible target pixels.
+
+| Scene | Recommendation |
+| --- | --- |
+| Occluded object | Box the visible part unless your project defines otherwise |
+| Shadow | Do not include the shadow |
+| Transparent object | Box the visible contour and document the rule |
+| Tiny object | Skip below your threshold, but be consistent |
+| Cut-off object | Keep it if the real use case includes cut-off views |
+
+Consistency matters more than making one individual image perfect. The model learns statistical patterns across the dataset.
+
+### How Much Data Is Enough?
+
+There is no universal number, but phases help:
+
+| Phase | Image count | Goal |
+| --- | --- | --- |
+| Smoke dataset | 10-30 | Prove training can run and paths are correct |
+| First dataset | 100-300 | See whether the model learns the basic pattern |
+| Iteration dataset | 300-1000+ | Add difficult cases and improve generalization |
+
+If you have many classes, each class needs enough examples. A first project with 2-3 clear classes is usually better than a first project with 20 vague classes.
+
 ### Dataset Versioning
 
 Do not keep changing data without naming versions. Use a simple convention:
@@ -361,11 +588,27 @@ dataset_v3_fixed_labels
 
 Your model report should always say which dataset version it used.
 
+### Pre-Training Dataset Checklist
+
+Before training, check:
+
+- `dataset.yaml` paths can be read by scripts.
+- `names` covers every class id used by labels.
+- Every image has the intended label file.
+- Label coordinates are between 0 and 1.
+- Train and validation sets do not contain accidental duplicates.
+- Validation images resemble the target use case.
+- There are no obvious missing labels or duplicate labels.
+
+If data quality is unstable, longer training usually just learns the mistakes more confidently.
+
 ---
 
 ## Chapter 6: Training in the Cloud
 
 Training adjusts model weights so predictions fit your dataset. Cloud training is recommended when local hardware is weak.
+
+![Local-light and cloud-heavy workflow](../assets/local_cloud_workflow.svg)
 
 The typical training call is:
 
@@ -401,6 +644,31 @@ This catches:
 
 If the smoke run fails, do not tune hyperparameters. Fix the data path or label issue.
 
+### Cloud Training Package
+
+Prepare cloud work as a small package:
+
+```text
+cloud_train_package/
+  dataset/
+    images/
+    labels/
+    dataset.yaml
+  train_notebook.ipynb
+  requirements.txt
+  README_cloud.md
+```
+
+`README_cloud.md` should say:
+
+- dataset version
+- entry notebook
+- expected training time
+- output directory
+- files to download after training
+
+Cloud runtimes can reset. A clear package lets you recover quickly.
+
 ### Important Training Parameters
 
 | Parameter | Effect |
@@ -410,6 +678,30 @@ If the smoke run fails, do not tune hyperparameters. Fix the data path or label 
 | `batch` | images per training step; too high can exceed memory |
 | `model` | starting weights and model size |
 | `patience` | early stopping patience in some training configs |
+
+### Reading Training Logs
+
+During training, do not only wait for `best.pt`. Watch:
+
+- whether loss generally decreases
+- whether validation metrics stay flat
+- whether precision and recall are badly imbalanced
+- whether GPU memory is near the limit
+- whether each epoch takes unusually long
+
+If training loss decreases but validation metrics do not improve, possible causes include overfitting, a tiny validation set, inconsistent labels, or train/validation distribution mismatch.
+
+### Underfitting and Overfitting
+
+Underfitting means the model cannot even learn the training set well. Common causes are too few epochs, too small a model, too low an image size, or noisy labels.
+
+Overfitting means the model looks good on training data but fails on validation or real data. Common causes are too little data, narrow scenes, too much training, or a validation set that exposes different conditions.
+
+| Symptom | Possible issue | Next step |
+| --- | --- | --- |
+| Train poor, validation poor | underfitting or data errors | inspect labels, train longer, try a slightly larger model |
+| Train good, validation poor | overfitting or domain shift | add diverse data, analyze errors |
+| Both good, real scene poor | target scene mismatch | collect real-scene data |
 
 ### What to Save
 
@@ -430,6 +722,8 @@ Do not trust memory. Future you will not remember which model came from which da
 ## Chapter 7: Validation and Error Analysis
 
 Validation gives metrics. Error analysis gives direction.
+
+![Error analysis matrix](../assets/error_analysis_matrix.svg)
 
 Common detection metrics:
 
@@ -459,6 +753,16 @@ Low mAP for one class:
 - Labels may be inconsistent.
 - The class may be visually similar to another class.
 
+### TP, FP, and FN
+
+Detection evaluation checks both category and location.
+
+- True positive: the model predicted an object with the right class and enough box overlap.
+- False positive: the model predicted an object where no matching true object exists.
+- False negative: a real object was missed.
+
+Precision is sensitive to false positives. Recall is sensitive to false negatives. Lowering the confidence threshold often improves recall but may hurt precision; raising it often does the opposite.
+
 ### Error Buckets
 
 Create a table with these buckets:
@@ -483,6 +787,28 @@ Change one major thing at a time:
 - training duration
 
 If you change everything at once, you will not know why results changed.
+
+### How Detailed Should Error Analysis Be?
+
+After a training run, choose at least 20 failed images and write a table:
+
+| image | error_type | observed | likely_reason | next_action |
+| --- | --- | --- | --- | --- |
+| val_003.jpg | false negative | low-light cup missed | not enough low-light cups | collect low-light cup images |
+| val_014.jpg | false positive | reflection detected as phone | missing hard negatives | add reflective desk negatives |
+| val_021.jpg | bad box | box includes too much background | loose labels | revise label rules and audit |
+
+The purpose is to turn "the model is bad" into an actionable data task.
+
+### Do Not Worship One Score
+
+`mAP50-95` is useful, but project success also depends on:
+
+- whether critical classes work
+- whether high-risk errors are acceptable
+- whether inference speed is usable
+- whether deployment is stable
+- whether failures can be improved with the next data round
 
 ---
 
@@ -531,6 +857,27 @@ If local deployment is too slow:
 - process every Nth video frame
 
 Do not let "webcam real-time" become a blocker. A reliable image upload demo is already a valid first deployment.
+
+### Inference Is More Than a Model File
+
+Deployment includes pre-processing and post-processing:
+
+```text
+read image -> resize/letterbox -> model inference -> parse output -> NMS -> restore coordinates -> draw boxes or return JSON
+```
+
+If you export to ONNX or another runtime, confirm that coordinates map back to the original image, class order is unchanged, and NMS behavior is understood.
+
+### Deployment Acceptance Checklist
+
+Before calling a deployment done, check:
+
+- the same test image gives similar results locally and in deployment
+- class names display correctly
+- large images, small images, empty images, and wrong formats receive reasonable responses
+- inference time is acceptable
+- model version and dataset version are recorded
+- image privacy and storage behavior are documented
 
 ---
 
@@ -588,6 +935,28 @@ dataset version + code commit + training command + model artifact = experiment
 
 This is the heart of the course. A mediocre but reproducible model is easier to improve than an impressive result you cannot recreate.
 
+### Reproducible Experiment Notes
+
+Weak note:
+
+```text
+Trained today. Looks okay.
+```
+
+Useful note:
+
+```text
+run_id: 2026-05-22-cup-phone-v2-yolo11n
+dataset: dataset_v2_more_low_light
+base_model: yolo11n.pt
+command: python scripts/train_custom.py --data data/yolo_dataset/dataset.yaml --model yolo11n.pt --epochs 50 --imgsz 640
+result: best.pt, mAP50=0.82, recall=0.74
+main_errors: low-light cups missed, phone reflections false positive
+next_step: add 60 low-light cup images and 30 reflective-desk hard negatives
+```
+
+This is the difference between a memory and an experiment.
+
 ---
 
 ## Chapter 10: Final Project Checklist
@@ -634,6 +1003,21 @@ Minimum final deliverables:
 - evaluation is underspecified
 
 Start narrow. Earn complexity later.
+
+### Final Project Rubric
+
+Use this table to self-check:
+
+| Area | Passing | Strong |
+| --- | --- | --- |
+| Problem | classes and scene are clear | intended and out-of-scope use are explicit |
+| Data | train/val/test and label rules exist | data card, versions, and bias notes exist |
+| Training | experiment command is reproducible | smoke run, full run, and comparison run are documented |
+| Evaluation | metrics and prediction images exist | error buckets and next data plan exist |
+| Deployment | demo or export runs | acceptance checks, speed, and privacy are documented |
+| Documentation | README runs the basic flow | a new reader can reproduce the experiment |
+
+The final project is not proof that the model is perfect. It is proof that you can turn a vision problem into a reproducible engineering project.
 
 ---
 
@@ -772,7 +1156,43 @@ YOLO: You Only Look Once, a family of real-time object detection models.
 
 ---
 
-## Appendix D: References
+## Appendix D: Study Questions
+
+After each chapter, use these questions to check yourself.
+
+Chapter 1:
+
+- Does your task really need detection, or would classification be enough?
+- Can every class be identified visually?
+- Which work belongs locally, and which work belongs in the cloud?
+
+Chapter 2:
+
+- Can you convert a pixel box into a YOLO label by hand?
+- What do `conf` and NMS `iou` control?
+- Why can a high-confidence prediction still be a bad box?
+
+Chapter 3:
+
+- What do backbone, neck, and head each do?
+- Why do small objects depend on higher-resolution detail?
+- Why do pretrained weights help small custom datasets?
+
+Chapter 5:
+
+- Do images and labels match one-to-one?
+- Are annotation rules written down and consistent?
+- Does the validation set resemble the target use case?
+
+Chapter 7:
+
+- What is the model's biggest error bucket?
+- Should the next iteration collect data, fix labels, tune thresholds, or change deployment?
+- If the score improved, can you explain why?
+
+---
+
+## Appendix E: References
 
 - Ultralytics Python Usage: https://docs.ultralytics.com/usage/python
 - Ultralytics Object Detection Dataset Format: https://docs.ultralytics.com/datasets/detect

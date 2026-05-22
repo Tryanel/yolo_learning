@@ -8,6 +8,8 @@ Build the first version of your custom detection dataset and verify that its str
 
 YOLO detection training depends on a strict relationship between images, labels, and `dataset.yaml`. A weak model trained on clean labels often beats a larger model trained on confused data.
 
+![YOLO dataset folder structure](../../docs/assets/dataset_layout.svg)
+
 ## Tasks
 
 1. Choose 1-3 classes.
@@ -42,4 +44,3 @@ python tools/course.py grade lab03
 ```powershell
 python tools/course.py handin lab03
 ```
-

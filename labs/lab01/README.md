@@ -8,6 +8,8 @@ Understand the geometry behind object detection before trusting model output. Yo
 
 YOLO returns boxes. A useful practitioner must know whether a box is good, duplicated, too loose, too tight, or just confidently wrong. IoU and NMS are the small pieces of math that make this visible.
 
+![Bounding boxes, IoU, and NMS](../../docs/assets/box_iou_nms.svg)
+
 ## Tasks
 
 1. Draw at least five example boxes by hand on images of your choice.
@@ -34,4 +36,3 @@ python tools/course.py grade lab01
 ```powershell
 python tools/course.py handin lab01
 ```
-

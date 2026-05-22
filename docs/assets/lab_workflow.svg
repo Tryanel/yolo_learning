@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">YOLO Learning Lab workflow</title>
+  <desc id="desc">A lab workflow from reading, doing tasks, grading, hand-in, and reflection.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#0f766e"/>
+    </marker>
+    <style>
+      .bg{fill:#f7f3ea}.ink{fill:#172026}.muted{fill:#667085}.teal{fill:#0f766e}.mint{fill:#e8f5f1}.coral{fill:#f36f45}.gold{fill:#f4b942}
+      .card{fill:#fffdf7;stroke:#d8cdb8;stroke-width:2}.num{font:700 30px 'Microsoft YaHei',Arial,sans-serif;fill:#fff}
+      .title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.label{font:700 24px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}
+      .body{font:18px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.code{font:18px Consolas,monospace;fill:#0f766e}
+      .arrow{stroke:#0f766e;stroke-width:4;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="520"/>
+  <text x="70" y="70" class="title">实验驱动学习闭环</text>
+  <text x="70" y="106" class="body">每个 lab 都产生可检查的证据，而不是只留下“我看过了”。</text>
+  <g transform="translate(70,165)">
+    <rect class="card" x="0" y="0" width="180" height="180" rx="18"/>
+    <circle cx="38" cy="42" r="24" class="teal"/><text x="29" y="52" class="num">1</text>
+    <text x="28" y="100" class="label">阅读</text>
+    <text x="28" y="135" class="body">教材章节</text>
+    <text x="28" y="162" class="code">docs/textbook</text>
+  </g>
+  <path class="arrow" d="M270 255 H340"/>
+  <g transform="translate(360,165)">
+    <rect class="card" x="0" y="0" width="180" height="180" rx="18"/>
+    <circle cx="38" cy="42" r="24" class="coral"/><text x="29" y="52" class="num">2</text>
+    <text x="28" y="100" class="label">实验</text>
+    <text x="28" y="135" class="body">运行命令</text>
+    <text x="28" y="162" class="code">labs/labXX</text>
+  </g>
+  <path class="arrow" d="M560 255 H630"/>
+  <g transform="translate(650,165)">
+    <rect class="card" x="0" y="0" width="180" height="180" rx="18"/>
+    <circle cx="38" cy="42" r="24" class="gold"/><text x="29" y="52" class="num">3</text>
+    <text x="28" y="100" class="label">检查</text>
+    <text x="28" y="135" class="body">自动评分</text>
+    <text x="28" y="162" class="code">grade labXX</text>
+  </g>
+  <path class="arrow" d="M850 255 H920"/>
+  <g transform="translate(940,165)">
+    <rect class="card" x="0" y="0" width="180" height="180" rx="18"/>
+    <circle cx="38" cy="42" r="24" class="teal"/><text x="29" y="52" class="num">4</text>
+    <text x="28" y="100" class="label">提交</text>
+    <text x="28" y="135" class="body">打包证据</text>
+    <text x="28" y="162" class="code">handin labXX</text>
+  </g>
+  <path d="M1030 365 C870 455 300 455 160 365" stroke="#f36f45" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+  <text x="455" y="447" class="body">复盘失败案例，进入下一轮数据和模型改进</text>
+</svg>

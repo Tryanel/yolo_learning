@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="580" viewBox="0 0 1200 580" role="img" aria-labelledby="title desc">
+  <title id="title">Local-light and cloud-heavy YOLO workflow</title>
+  <desc id="desc">A split workflow showing local repo, dataset work, cloud training, and hosted demo.</desc>
+  <style>
+    .bg{fill:#f7f3ea}.ink{fill:#172026}.muted{fill:#667085}.teal{fill:#0f766e}.coral{fill:#f36f45}.gold{fill:#f4b942}
+    .local{fill:#e8f5f1;stroke:#9de0d3;stroke-width:2}.cloud{fill:#fff1e8;stroke:#f4c5a9;stroke-width:2}
+    .title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.label{font:700 25px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}
+    .body{font:18px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.item{font:700 19px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}
+    .arrow{stroke:#16324f;stroke-width:4;fill:none}
+  </style>
+  <rect class="bg" width="1200" height="580"/>
+  <text x="70" y="70" class="title">本地轻量 + 云端训练/部署</text>
+  <text x="70" y="106" class="body">弱电脑也能完整学习 YOLO：把算力任务放到云端，把可复现工作留在本地。</text>
+  <rect x="80" y="165" width="465" height="300" rx="22" class="local"/>
+  <text x="120" y="218" class="label">本地电脑</text>
+  <circle cx="130" cy="265" r="7" class="teal"/><text x="155" y="272" class="item">写代码与笔记</text>
+  <circle cx="130" cy="315" r="7" class="teal"/><text x="155" y="322" class="item">整理 dataset.yaml</text>
+  <circle cx="130" cy="365" r="7" class="teal"/><text x="155" y="372" class="item">少量图片预测</text>
+  <circle cx="130" cy="415" r="7" class="teal"/><text x="155" y="422" class="item">记录错误案例</text>
+  <rect x="655" y="165" width="465" height="300" rx="22" class="cloud"/>
+  <text x="695" y="218" class="label">云端资源</text>
+  <circle cx="705" cy="265" r="7" class="coral"/><text x="730" y="272" class="item">GPU 训练</text>
+  <circle cx="705" cy="315" r="7" class="coral"/><text x="730" y="322" class="item">批量验证</text>
+  <circle cx="705" cy="365" r="7" class="coral"/><text x="730" y="372" class="item">在线 Demo</text>
+  <circle cx="705" cy="415" r="7" class="coral"/><text x="730" y="422" class="item">托管 API</text>
+  <path d="M560 300 H640" class="arrow"/><polygon points="640,300 620,289 620,311" fill="#16324f"/>
+  <path d="M640 350 H560" class="arrow"/><polygon points="560,350 580,339 580,361" fill="#16324f"/>
+  <text x="515" y="270" class="body">数据上传</text>
+  <text x="505" y="395" class="body">权重下载</text>
+</svg>

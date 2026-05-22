@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">YOLO error analysis matrix</title>
+  <desc id="desc">A matrix of common detection errors and recommended dataset actions.</desc>
+  <style>
+    .bg{fill:#fffdf7}.ink{fill:#172026}.muted{fill:#667085}.teal{fill:#0f766e}.coral{fill:#f36f45}.gold{fill:#f4b942}
+    .title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.body{font:17px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+    .head{font:700 21px 'Microsoft YaHei',Arial,sans-serif;fill:#fff}.celltitle{font:700 20px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}
+    .cellbody{font:16px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.grid{stroke:#d8cdb8;stroke-width:2}.cell{fill:#f7f3ea}
+  </style>
+  <rect class="bg" width="1200" height="680"/>
+  <text x="70" y="70" class="title">错误案例分析矩阵</text>
+  <text x="70" y="106" class="body">不要只看 mAP。把错误分桶，才能知道下一轮该补什么数据。</text>
+  <g transform="translate(80,160)">
+    <rect x="0" y="0" width="1040" height="58" fill="#16324f"/>
+    <text x="35" y="38" class="head">错误类型</text>
+    <text x="355" y="38" class="head">常见现象</text>
+    <text x="720" y="38" class="head">下一步动作</text>
+    <g transform="translate(0,58)">
+      <rect class="cell grid" width="1040" height="72"/><text x="35" y="43" class="celltitle">漏检</text><text x="355" y="43" class="cellbody">目标存在但没有框</text><text x="720" y="43" class="cellbody">补相似样本，检查阈值</text>
+      <rect class="cell grid" y="72" width="1040" height="72"/><text x="35" y="115" class="celltitle">误检</text><text x="355" y="115" class="cellbody">背景被当成目标</text><text x="720" y="115" class="cellbody">添加 hard negative</text>
+      <rect class="cell grid" y="144" width="1040" height="72"/><text x="35" y="187" class="celltitle">框不准</text><text x="355" y="187" class="cellbody">类别对，位置差</text><text x="720" y="187" class="cellbody">修标签，增加分辨率</text>
+      <rect class="cell grid" y="216" width="1040" height="72"/><text x="35" y="259" class="celltitle">类别错</text><text x="355" y="259" class="cellbody">A 被识别成 B</text><text x="720" y="259" class="cellbody">澄清类别定义，补样本</text>
+      <rect class="cell grid" y="288" width="1040" height="72"/><text x="35" y="331" class="celltitle">域偏移</text><text x="355" y="331" class="cellbody">新场景整体变差</text><text x="720" y="331" class="cellbody">采集目标场景数据</text>
+    </g>
+  </g>
+</svg>

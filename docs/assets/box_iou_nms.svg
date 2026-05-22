@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Bounding box, IoU and NMS</title>
+  <desc id="desc">A visual explanation of YOLO normalized boxes, intersection over union, and duplicate suppression.</desc>
+  <style>
+    .bg{fill:#f7f3ea}.ink{fill:#172026}.muted{fill:#667085}.teal{stroke:#0f766e}.coral{stroke:#f36f45}.gold{fill:#f4b942}
+    .title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.label{font:700 22px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}
+    .body{font:17px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.code{font:18px Consolas,monospace;fill:#16324f}
+    .panel{fill:#fffdf7;stroke:#d8cdb8;stroke-width:2}.box{fill:none;stroke-width:5}.thin{stroke:#d8cdb8;stroke-width:2}
+  </style>
+  <rect class="bg" width="1200" height="620"/>
+  <text x="70" y="70" class="title">检测框、IoU 与 NMS</text>
+  <text x="70" y="106" class="body">YOLO 的结果不是一个标签，而是一组几何对象。</text>
+  <g transform="translate(70,155)">
+    <rect class="panel" width="320" height="360" rx="18"/>
+    <text x="28" y="45" class="label">1. YOLO 标签格式</text>
+    <rect x="62" y="90" width="190" height="145" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+    <rect x="112" y="125" width="92" height="70" class="box teal"/>
+    <circle cx="158" cy="160" r="6" fill="#f36f45"/>
+    <line x1="158" y1="160" x2="158" y2="250" class="thin"/><line x1="158" y1="160" x2="272" y2="160" class="thin"/>
+    <text x="36" y="280" class="code">class x y w h</text>
+    <text x="36" y="314" class="body">坐标是 0 到 1 的比例</text>
+  </g>
+  <g transform="translate(440,155)">
+    <rect class="panel" width="320" height="360" rx="18"/>
+    <text x="28" y="45" class="label">2. IoU 衡量重叠</text>
+    <rect x="80" y="105" width="130" height="110" class="box teal"/>
+    <rect x="130" y="145" width="130" height="110" class="box coral"/>
+    <rect x="130" y="145" width="80" height="70" fill="#f4b942" fill-opacity="0.55"/>
+    <text x="60" y="290" class="code">IoU = intersection / union</text>
+    <text x="52" y="324" class="body">越接近 1，两个框越一致</text>
+  </g>
+  <g transform="translate(810,155)">
+    <rect class="panel" width="320" height="360" rx="18"/>
+    <text x="28" y="45" class="label">3. NMS 去重</text>
+    <rect x="72" y="110" width="150" height="105" class="box teal"/>
+    <rect x="93" y="128" width="150" height="105" class="box coral" opacity="0.55"/>
+    <rect x="112" y="146" width="150" height="105" class="box coral" opacity="0.32"/>
+    <text x="55" y="295" class="body">保留最高置信度框</text>
+    <text x="55" y="326" class="body">删除高度重叠的重复框</text>
+  </g>
+</svg>

@@ -30,11 +30,14 @@ python scripts/check_environment.py
 - [docs/teaching_model.md](docs/teaching_model.md): 仓库教学模式说明
 - [docs/textbook/yolo_model_textbook_zh.md](docs/textbook/yolo_model_textbook_zh.md): 完整 YOLO 中文教材
 - [docs/textbook/yolo_model_textbook.md](docs/textbook/yolo_model_textbook.md): English textbook
+- [docs/assets/README.md](docs/assets/README.md): 教学图示和 GPT Image 2 提示词素材
 - [labs/](labs): 每个实验的说明
 - [submissions/](submissions): 每个实验的提交模板
 - [scripts/](scripts): YOLO 预测、训练、评估、导出和数据检查脚本
 
 ## Labs
+
+![实验驱动学习闭环](docs/assets/lab_workflow.svg)
 
 | Lab | Topic | Command |
 | --- | --- | --- |

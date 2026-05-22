@@ -8,6 +8,8 @@ Move from "I trained a model" to "I know what my model gets wrong and what data 
 
 Validation metrics are useful, but they are not a substitute for looking at mistakes. Good detection projects improve through error buckets: false positives, false negatives, class confusion, box quality, small objects, occlusion, and domain shift.
 
+![Error analysis matrix](../../docs/assets/error_analysis_matrix.svg)
+
 ## Tasks
 
 1. Run validation on the model from Lab 04.
@@ -35,4 +37,3 @@ python tools/course.py grade lab05
 ```powershell
 python tools/course.py handin lab05
 ```
-

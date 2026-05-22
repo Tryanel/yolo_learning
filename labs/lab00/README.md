@@ -8,6 +8,8 @@ Bring your local machine to a known-good learning state. This lab does not train
 
 Weak local hardware is fine for this course. The local machine is used for code, notes, dataset bookkeeping, and small prediction tests. Training and heavy evaluation can move to Colab or another cloud GPU later.
 
+![Local-light and cloud-heavy workflow](../../docs/assets/local_cloud_workflow.svg)
+
 ## Tasks
 
 1. Confirm your Python executable:
@@ -54,4 +56,3 @@ python tools/course.py grade lab00
 ```powershell
 python tools/course.py handin lab00
 ```
-

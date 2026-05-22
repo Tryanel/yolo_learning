@@ -8,6 +8,8 @@ Train your first custom model in the cloud and keep a reproducible experiment lo
 
 Training is the first compute-heavy lab. If your local machine is weak, use Google Colab, Ultralytics Cloud Training, Kaggle, or another GPU-backed notebook. The important artifact is not only `best.pt`; it is the record of exactly what produced it.
 
+![Local-light and cloud-heavy workflow](../../docs/assets/local_cloud_workflow.svg)
+
 ## Tasks
 
 1. Upload or mount your dataset in a cloud notebook.
@@ -36,4 +38,3 @@ python tools/course.py grade lab04
 ```powershell
 python tools/course.py handin lab04
 ```
-

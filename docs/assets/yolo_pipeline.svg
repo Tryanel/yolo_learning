@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">YOLO detection pipeline</title>
+  <desc id="desc">Image enters the model, features are extracted, predictions are post-processed, and final boxes are produced.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#16324f"/></marker>
+    <style>
+      .bg{fill:#fffdf7}.ink{fill:#172026}.muted{fill:#667085}.navy{fill:#16324f}.teal{fill:#0f766e}.mint{fill:#e8f5f1}.orange{fill:#fff1e8;stroke:#f4c5a9;stroke-width:2}
+      .card{fill:#f7f3ea;stroke:#d8cdb8;stroke-width:2}.title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}
+      .label{font:700 22px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.body{font:17px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+      .small{font:14px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.arrow{stroke:#16324f;stroke-width:4;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="560"/>
+  <text x="70" y="72" class="title">YOLO 目标检测流水线</text>
+  <text x="70" y="108" class="body">把模型看成一个系统：输入图片，输出带类别和置信度的检测框。</text>
+  <g transform="translate(70,175)">
+    <rect class="card" width="180" height="230" rx="18"/>
+    <rect x="35" y="42" width="110" height="82" rx="10" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+    <circle cx="72" cy="76" r="16" fill="#f59e0b"/><rect x="96" y="88" width="32" height="24" fill="#0f766e"/>
+    <text x="34" y="165" class="label">Image</text>
+    <text x="34" y="195" class="small">原始图片或视频帧</text>
+  </g>
+  <path class="arrow" d="M270 290 H330"/>
+  <g transform="translate(350,175)">
+    <rect class="card" width="190" height="230" rx="18"/>
+    <rect x="36" y="38" width="118" height="35" rx="8" fill="#e8f5f1"/>
+    <rect x="52" y="82" width="86" height="35" rx="8" fill="#cdeee7"/>
+    <rect x="66" y="126" width="58" height="35" rx="8" fill="#9de0d3"/>
+    <text x="34" y="182" class="label">Backbone</text>
+    <text x="34" y="210" class="small">提取边缘、纹理、形状</text>
+  </g>
+  <path class="arrow" d="M560 290 H620"/>
+  <g transform="translate(640,175)">
+    <rect class="card" width="190" height="230" rx="18"/>
+    <path d="M48 55 H142 M48 95 H142 M48 135 H142" stroke="#0f766e" stroke-width="8" stroke-linecap="round"/>
+    <path d="M64 55 C95 72 104 82 128 95 M64 135 C95 118 104 108 128 95" stroke="#f36f45" stroke-width="5" fill="none"/>
+    <text x="34" y="182" class="label">Neck</text>
+    <text x="34" y="210" class="small">融合不同尺度特征</text>
+  </g>
+  <path class="arrow" d="M850 290 H910"/>
+  <g transform="translate(930,175)">
+    <rect class="orange" width="200" height="230" rx="18"/>
+    <rect x="36" y="46" width="126" height="78" fill="none" stroke="#f36f45" stroke-width="5"/>
+    <text x="43" y="42" class="small">cup 0.91</text>
+    <rect x="72" y="84" width="76" height="50" fill="none" stroke="#0f766e" stroke-width="5"/>
+    <text x="76" y="157" class="small">phone 0.84</text>
+    <text x="34" y="190" class="label">Head + NMS</text>
+    <text x="34" y="216" class="small">框、类别、置信度</text>
+  </g>
+</svg>
