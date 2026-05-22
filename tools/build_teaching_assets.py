@@ -297,6 +297,255 @@ def build_error_matrix() -> None:
     )
 
 
+def build_feature_pyramid() -> None:
+    write_svg(
+        "feature_pyramid.svg",
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+          <title id="title">Feature pyramid and multi-scale detection</title>
+          <desc id="desc">An input image becomes feature maps at multiple scales for small, medium, and large object detection.</desc>
+          <defs>
+            <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#16324f"/></marker>
+            <style>
+              .bg{fill:#fffdf7}.title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.body{font:18px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+              .label{font:700 22px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.small{font:16px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+              .panel{fill:#f7f3ea;stroke:#d8cdb8;stroke-width:2}.map{fill:#e8f5f1;stroke:#0f766e;stroke-width:3}.grid{stroke:#9de0d3;stroke-width:1}
+              .arrow{stroke:#16324f;stroke-width:4;fill:none;marker-end:url(#arrow)}
+            </style>
+          </defs>
+          <rect class="bg" width="1200" height="650"/>
+          <text x="70" y="72" class="title">特征图与多尺度检测</text>
+          <text x="70" y="108" class="body">图片经过主干网络后变成不同大小的特征图：高分辨率保留细节，低分辨率语义更强。</text>
+          <g transform="translate(80,170)">
+            <rect class="panel" width="260" height="310" rx="18"/>
+            <rect x="48" y="56" width="164" height="120" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+            <circle cx="92" cy="96" r="18" fill="#f4b942"/>
+            <rect x="130" y="118" width="50" height="34" fill="#0f766e"/>
+            <text x="45" y="225" class="label">输入图片</text>
+            <text x="45" y="260" class="small">像素级信息最多</text>
+          </g>
+          <path class="arrow" d="M360 325 H455"/>
+          <g transform="translate(485,145)">
+            <rect class="panel" width="610" height="370" rx="22"/>
+            <text x="38" y="52" class="label">Feature Pyramid</text>
+            <text x="38" y="86" class="small">同一张图片被压缩成多种尺度的线索地图</text>
+            <g transform="translate(60,125)">
+              <rect class="map" width="170" height="170" rx="8"/>
+              <path class="grid" d="M34 0 V170 M68 0 V170 M102 0 V170 M136 0 V170 M0 34 H170 M0 68 H170 M0 102 H170 M0 136 H170"/>
+              <text x="18" y="215" class="label">P3 细节多</text>
+              <text x="18" y="245" class="small">适合小目标</text>
+            </g>
+            <g transform="translate(270,150)">
+              <rect class="map" width="130" height="130" rx="8"/>
+              <path class="grid" d="M32 0 V130 M64 0 V130 M96 0 V130 M0 32 H130 M0 64 H130 M0 96 H130"/>
+              <text x="0" y="190" class="label">P4 平衡</text>
+              <text x="0" y="220" class="small">适合中等目标</text>
+            </g>
+            <g transform="translate(455,175)">
+              <rect class="map" width="90" height="90" rx="8"/>
+              <path class="grid" d="M30 0 V90 M60 0 V90 M0 30 H90 M0 60 H90"/>
+              <text x="-8" y="165" class="label">P5 语义强</text>
+              <text x="-8" y="195" class="small">适合大目标</text>
+            </g>
+          </g>
+        </svg>
+        """,
+    )
+
+
+def build_detection_head_outputs() -> None:
+    write_svg(
+        "detection_head_outputs.svg",
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" role="img" aria-labelledby="title desc">
+          <title id="title">Detection head outputs</title>
+          <desc id="desc">Feature map locations produce candidate boxes with class scores and confidence, then thresholds and NMS produce final detections.</desc>
+          <defs>
+            <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#16324f"/></marker>
+            <style>
+              .bg{fill:#f7f3ea}.title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.body{font:18px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+              .label{font:700 22px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.small{font:16px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.code{font:18px Consolas,monospace;fill:#16324f}
+              .panel{fill:#fffdf7;stroke:#d8cdb8;stroke-width:2}.grid{fill:#e8f5f1;stroke:#0f766e;stroke-width:3}.line{stroke:#9de0d3;stroke-width:1}.arrow{stroke:#16324f;stroke-width:4;fill:none;marker-end:url(#arrow)}
+              .chip{fill:#fff1e8;stroke:#f4c5a9;stroke-width:2}
+            </style>
+          </defs>
+          <rect class="bg" width="1200" height="660"/>
+          <text x="70" y="72" class="title">检测头输出到底是什么</text>
+          <text x="70" y="108" class="body">检测头把特征图上的位置变成候选框，再经过阈值和 NMS 筛选成最终结果。</text>
+          <g transform="translate(80,170)">
+            <rect class="panel" width="280" height="330" rx="18"/>
+            <text x="34" y="48" class="label">特征图位置</text>
+            <rect x="58" y="88" width="164" height="164" rx="8" class="grid"/>
+            <path class="line" d="M99 88 V252 M140 88 V252 M181 88 V252 M58 129 H222 M58 170 H222 M58 211 H222"/>
+            <circle cx="140" cy="170" r="11" fill="#f36f45"/>
+            <text x="50" y="292" class="small">每个位置预测若干候选信息</text>
+          </g>
+          <path class="arrow" d="M380 335 H455"/>
+          <g transform="translate(485,170)">
+            <rect class="panel" width="300" height="330" rx="18"/>
+            <text x="34" y="48" class="label">候选输出</text>
+            <rect x="38" y="82" width="225" height="48" rx="10" class="chip"/><text x="58" y="113" class="code">box: x y w h</text>
+            <rect x="38" y="150" width="225" height="48" rx="10" class="chip"/><text x="58" y="181" class="code">class scores</text>
+            <rect x="38" y="218" width="225" height="48" rx="10" class="chip"/><text x="58" y="249" class="code">confidence</text>
+            <text x="38" y="304" class="small">不同实现的细节会变，核心都是“位置 + 类别 + 质量”。</text>
+          </g>
+          <path class="arrow" d="M805 335 H880"/>
+          <g transform="translate(910,170)">
+            <rect class="panel" width="230" height="330" rx="18"/>
+            <text x="30" y="48" class="label">筛选后结果</text>
+            <rect x="42" y="84" width="132" height="82" fill="none" stroke="#f36f45" stroke-width="5"/>
+            <text x="47" y="77" class="small">cup 0.91</text>
+            <rect x="70" y="142" width="95" height="62" fill="none" stroke="#0f766e" stroke-width="5"/>
+            <text x="74" y="229" class="small">phone 0.84</text>
+            <text x="34" y="284" class="small">conf 过滤 + NMS 去重</text>
+          </g>
+        </svg>
+        """,
+    )
+
+
+def build_loss_components() -> None:
+    write_svg(
+        "loss_components.svg",
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+          <title id="title">YOLO loss components</title>
+          <desc id="desc">Training loss combines box quality, class prediction, and confidence or objectness quality, then updates model weights.</desc>
+          <defs>
+            <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#16324f"/></marker>
+            <style>
+              .bg{fill:#fffdf7}.title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.body{font:18px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+              .label{font:700 22px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.small{font:16px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.code{font:19px Consolas,monospace;fill:#16324f}
+              .panel{fill:#f7f3ea;stroke:#d8cdb8;stroke-width:2}.box{fill:none;stroke-width:5}.pred{stroke:#f36f45}.gt{stroke:#0f766e}.arrow{stroke:#16324f;stroke-width:4;fill:none;marker-end:url(#arrow)}
+              .barbg{fill:#e8f5f1}.bar1{fill:#0f766e}.bar2{fill:#f36f45}.bar3{fill:#f4b942}
+            </style>
+          </defs>
+          <rect class="bg" width="1200" height="640"/>
+          <text x="70" y="72" class="title">损失函数如何推动学习</text>
+          <text x="70" y="108" class="body">训练时模型比较“预测”和“标签”的差距，把差距转成 loss，再反向更新参数。</text>
+          <g transform="translate(80,175)">
+            <rect class="panel" width="270" height="300" rx="18"/>
+            <text x="34" y="48" class="label">预测 vs 标签</text>
+            <rect x="70" y="95" width="125" height="92" class="box gt"/>
+            <rect x="98" y="123" width="125" height="92" class="box pred"/>
+            <text x="45" y="248" class="small">绿色：真实框</text>
+            <text x="45" y="278" class="small">橙色：预测框</text>
+          </g>
+          <path class="arrow" d="M370 325 H445"/>
+          <g transform="translate(475,175)">
+            <rect class="panel" width="300" height="300" rx="18"/>
+            <text x="34" y="48" class="label">Loss 组成</text>
+            <text x="36" y="98" class="small">框位置 / IoU 质量</text>
+            <rect x="36" y="112" width="210" height="20" rx="10" class="barbg"/><rect x="36" y="112" width="150" height="20" rx="10" class="bar1"/>
+            <text x="36" y="162" class="small">类别预测</text>
+            <rect x="36" y="176" width="210" height="20" rx="10" class="barbg"/><rect x="36" y="176" width="95" height="20" rx="10" class="bar2"/>
+            <text x="36" y="226" class="small">置信度 / 目标质量</text>
+            <rect x="36" y="240" width="210" height="20" rx="10" class="barbg"/><rect x="36" y="240" width="125" height="20" rx="10" class="bar3"/>
+          </g>
+          <path class="arrow" d="M795 325 H870"/>
+          <g transform="translate(900,175)">
+            <rect class="panel" width="230" height="300" rx="18"/>
+            <text x="30" y="58" class="label">反向传播</text>
+            <text x="30" y="112" class="code">loss ↓</text>
+            <text x="30" y="156" class="small">调整模型参数</text>
+            <text x="30" y="198" class="small">下一轮预测更接近标签</text>
+            <path d="M64 246 C122 205 157 230 168 168" stroke="#0f766e" stroke-width="6" fill="none"/>
+            <polygon points="168,168 153,183 174,190" fill="#0f766e"/>
+          </g>
+        </svg>
+        """,
+    )
+
+
+def build_precision_recall_curve() -> None:
+    write_svg(
+        "precision_recall_curve.svg",
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+          <title id="title">Precision-recall curve</title>
+          <desc id="desc">A precision-recall curve shows the tradeoff between conservative and permissive confidence thresholds.</desc>
+          <style>
+            .bg{fill:#f7f3ea}.title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.body{font:18px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+            .label{font:700 22px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.small{font:16px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.axis{stroke:#172026;stroke-width:3}.grid{stroke:#d8cdb8;stroke-width:1}
+            .curve{stroke:#0f766e;stroke-width:7;fill:none}.area{fill:#9de0d3;fill-opacity:.32}.dot{fill:#f36f45}
+          </style>
+          <rect class="bg" width="1200" height="640"/>
+          <text x="70" y="72" class="title">Precision-Recall 曲线</text>
+          <text x="70" y="108" class="body">调节置信度阈值，会在“少误检”和“少漏检”之间移动。AP 是曲线下方的综合面积。</text>
+          <g transform="translate(120,160)">
+            <line x1="0" y1="360" x2="760" y2="360" class="axis"/>
+            <line x1="0" y1="360" x2="0" y2="0" class="axis"/>
+            <path class="grid" d="M0 288 H760 M0 216 H760 M0 144 H760 M0 72 H760 M152 0 V360 M304 0 V360 M456 0 V360 M608 0 V360"/>
+            <path class="area" d="M0 40 C110 48 190 80 280 125 C385 178 470 240 600 300 C675 332 725 346 760 354 L760 360 L0 360 Z"/>
+            <path class="curve" d="M0 40 C110 48 190 80 280 125 C385 178 470 240 600 300 C675 332 725 346 760 354"/>
+            <circle cx="155" cy="66" r="9" class="dot"/><text x="174" y="62" class="small">高 conf：误检少，召回低</text>
+            <circle cx="560" cy="282" r="9" class="dot"/><text x="580" y="280" class="small">低 conf：找得多，误检多</text>
+            <text x="333" y="410" class="label">Recall</text>
+            <text x="-80" y="185" class="label" transform="rotate(-90 -80 185)">Precision</text>
+          </g>
+          <g transform="translate(930,215)">
+            <text x="0" y="0" class="label">读图方法</text>
+            <text x="0" y="45" class="small">曲线越靠右上越好</text>
+            <text x="0" y="85" class="small">AP 约等于曲线下面积</text>
+            <text x="0" y="125" class="small">不同阈值对应不同点</text>
+            <text x="0" y="165" class="small">真实项目要结合误检成本</text>
+          </g>
+        </svg>
+        """,
+    )
+
+
+def build_augmentation_panel() -> None:
+    write_svg(
+        "augmentation_panel.svg",
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+          <title id="title">Data augmentation examples</title>
+          <desc id="desc">Common image augmentations used to improve YOLO robustness.</desc>
+          <style>
+            .bg{fill:#fffdf7}.title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.body{font:18px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+            .label{font:700 22px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.small{font:16px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.panel{fill:#f7f3ea;stroke:#d8cdb8;stroke-width:2}
+            .img{fill:#dbeafe;stroke:#93c5fd;stroke-width:2}.box{fill:none;stroke:#f36f45;stroke-width:5}
+          </style>
+          <rect class="bg" width="1200" height="640"/>
+          <text x="70" y="72" class="title">数据增强在训练中做什么</text>
+          <text x="70" y="108" class="body">增强不是凭空创造新类别，而是让模型见到更多光照、尺度、裁剪和组合变化。</text>
+          <g transform="translate(80,165)">
+            <rect class="panel" width="230" height="310" rx="18"/>
+            <rect x="45" y="55" width="140" height="105" rx="8" class="img"/>
+            <rect x="80" y="88" width="65" height="48" class="box"/>
+            <text x="45" y="215" class="label">原图</text>
+            <text x="45" y="250" class="small">真实标注保持不变</text>
+          </g>
+          <g transform="translate(345,165)">
+            <rect class="panel" width="230" height="310" rx="18"/>
+            <rect x="45" y="55" width="140" height="105" rx="8" class="img" transform="rotate(-8 115 107)"/>
+            <rect x="79" y="86" width="65" height="48" class="box" transform="rotate(-8 111 110)"/>
+            <text x="45" y="215" class="label">旋转/缩放</text>
+            <text x="45" y="250" class="small">适应角度和距离变化</text>
+          </g>
+          <g transform="translate(610,165)">
+            <rect class="panel" width="230" height="310" rx="18"/>
+            <rect x="55" y="52" width="120" height="120" rx="8" fill="#fef3c7" stroke="#f4b942" stroke-width="2"/>
+            <line x1="115" y1="52" x2="115" y2="172" stroke="#fffdf7" stroke-width="5"/>
+            <line x1="55" y1="112" x2="175" y2="112" stroke="#fffdf7" stroke-width="5"/>
+            <rect x="78" y="75" width="42" height="35" class="box"/>
+            <text x="45" y="215" class="label">Mosaic</text>
+            <text x="45" y="250" class="small">组合多个场景</text>
+          </g>
+          <g transform="translate(875,165)">
+            <rect class="panel" width="230" height="310" rx="18"/>
+            <rect x="45" y="55" width="140" height="105" rx="8" fill="#e0f2fe" stroke="#93c5fd" stroke-width="2"/>
+            <rect x="80" y="88" width="65" height="48" class="box"/>
+            <rect x="45" y="55" width="140" height="105" rx="8" fill="#f36f45" opacity=".18"/>
+            <text x="45" y="215" class="label">颜色/亮度</text>
+            <text x="45" y="250" class="small">适应光照变化</text>
+          </g>
+        </svg>
+        """,
+    )
+
+
 def main() -> None:
     build_lab_workflow()
     build_yolo_pipeline()
@@ -304,9 +553,13 @@ def main() -> None:
     build_dataset_layout()
     build_local_cloud_workflow()
     build_error_matrix()
+    build_feature_pyramid()
+    build_detection_head_outputs()
+    build_loss_components()
+    build_precision_recall_curve()
+    build_augmentation_panel()
     print(f"Wrote teaching assets to {ASSET_DIR}")
 
 
 if __name__ == "__main__":
     main()
-

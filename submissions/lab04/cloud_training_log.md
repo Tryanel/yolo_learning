@@ -4,7 +4,27 @@
 
 TODO
 
+## Colab Notebook
+
+TODO
+
 ## Dataset Version
+
+TODO
+
+## Dataset Zip / Drive Path
+
+TODO
+
+## dataset.yaml Path
+
+TODO
+
+## GPU Check
+
+TODO
+
+## Smoke Run Result
 
 TODO
 
@@ -24,7 +44,10 @@ TODO
 
 TODO
 
-## What Failed
+## Output Backup Location
 
 TODO
 
+## What Failed
+
+TODO

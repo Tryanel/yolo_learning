@@ -378,11 +378,32 @@ Head：检测头，输出类别、框位置和置信度。
 
 模型不会一直在原图上逐像素判断“这里是不是杯子”。它会把图片变成一组更小、更抽象的特征图。特征图可以粗略理解为很多张“线索地图”：有的图对边缘敏感，有的图对纹理敏感，有的图对某种形状组合敏感。
 
+![特征图与多尺度检测](../assets/feature_pyramid.svg)
+
 大目标通常可以在较低分辨率、语义更强的特征图上被识别；小目标则更依赖高分辨率细节。所以现代 YOLO 往往会融合多个尺度的特征。你不必背每个模块名，但要记住一句话：
 
 ```text
 检测小目标需要细节，识别大目标需要语义，多尺度融合就是把两者接起来。
 ```
+
+### 检测头到底输出什么
+
+检测头不是直接输出“一张带框图片”，而是先输出大量候选结果。你可以把每个候选结果理解为：
+
+```text
+候选框位置 + 类别分数 + 目标质量/置信度
+```
+
+![检测头输出](../assets/detection_head_outputs.svg)
+
+模型会在多个特征尺度上产生候选框。后处理再把这些候选框变成人能读懂的检测结果：
+
+1. 删除低于 `conf` 阈值的候选框。
+2. 把坐标从模型内部尺度还原到原图尺度。
+3. 用 NMS 去掉重复框。
+4. 输出最终的 `class, confidence, box`。
+
+不同 YOLO 实现对“目标质量”“类别分数”“框回归”的具体计算会有差异，但工程上你先抓住这个抽象就够了：模型先产生很多候选，再筛选。
 
 ### 训练时模型在学什么
 
@@ -392,7 +413,18 @@ Head：检测头，输出类别、框位置和置信度。
 - 位置误差：框的位置和真实框不够重合。
 - 置信度误差：该有目标的地方不够自信，没目标的地方太自信。
 
+![损失函数组成](../assets/loss_components.svg)
+
 这些误差会被合成一个训练损失。训练日志里的 loss 下降，通常表示模型正在更好地拟合训练数据；但 loss 低不等于模型一定能泛化到新图片，所以还要看验证集指标和错误案例。
+
+更细一点看，训练过程可以分成四步：
+
+1. 前向传播：模型根据当前参数做预测。
+2. 计算损失：把预测和真实标签比较，得到 loss。
+3. 反向传播：计算哪些参数应该往哪个方向调整。
+4. 参数更新：优化器让下一轮预测更接近标签。
+
+loss 不是一个神秘分数，它只是“预测离标签还有多远”的可优化表达。检测任务里，它通常会同时关心框的位置质量、类别判断和目标置信质量。
 
 ### 为什么用预训练模型
 
@@ -639,6 +671,24 @@ labels/train/desk_001.txt
 
 如果类别很多，每个类别都需要足够样本。与其第一版做 20 个类别，不如先做 2-3 个定义清楚的类别，把完整流程跑稳。
 
+### 数据增强的作用
+
+训练时常会使用数据增强，例如缩放、裁剪、旋转、颜色扰动、Mosaic 等。
+
+![数据增强示例](../assets/augmentation_panel.svg)
+
+数据增强的目的不是“凭空制造真实数据”，而是让模型在训练时看到更多合理变化：
+
+- 同一个物体可能远一点、近一点。
+- 拍摄角度可能略微倾斜。
+- 光照可能变亮或变暗。
+- 物体可能被裁掉一部分。
+- 背景可能和训练集中不同。
+
+但增强不能替代真实数据。如果你的真实场景是夜间监控，而训练集全是白天照片，只靠调亮度增强通常不够。更可靠的做法是收集真实夜间样本。
+
+也不要把增强开得过强。过强增强会制造不自然图片，让模型学习到现实中不会出现的模式。初学阶段建议先使用训练框架默认增强，等错误分析稳定后再微调。
+
 ### 常见数据错误
 
 - 图片有标签，标签文件名不匹配
@@ -697,6 +747,208 @@ dataset_v3_fixed_labels
 - Kaggle Notebook
 - Ultralytics Cloud Training
 - 云服务器 GPU
+
+### 以 Google Colab 为例
+
+Google Colab 入口：
+
+```text
+https://colab.research.google.com/
+```
+
+Colab 可以理解为“运行在浏览器里的云端 Jupyter Notebook”。你本地只需要浏览器，代码和训练过程运行在 Google 提供的云端虚拟机里。它适合本课程的原因是：不需要本地安装 CUDA，不需要本地 GPU，也可以把 notebook 保存在 Google Drive 中。
+
+但要先理解它的边界：
+
+- Colab 需要 Google 账号登录。
+- 免费版资源不是保证供应，也不是无限使用。
+- GPU/TPU 类型会随时间和可用性变化。
+- Notebook 空闲太久会断开，虚拟机会被回收。
+- `/content` 里的文件属于当前运行时，断开后可能丢失。
+- 重要数据、训练结果和 notebook 要保存到 Google Drive 或 GitHub。
+
+#### 注册和账号注意事项
+
+如果你已经能登录 Gmail、Google Drive 或 YouTube，通常就已经有 Google 账号，可以直接用于 Colab。
+
+如果没有账号，可以从 Google 账号页面创建：
+
+```text
+https://accounts.google.com/signup
+```
+
+创建账号时注意：
+
+- 可以创建 Gmail 地址，也可以用已有的非 Gmail 邮箱创建 Google 账号。
+- 建议添加恢复邮箱或手机号，防止训练资料和 Drive 文件丢失访问权。
+- 学校或公司 Workspace 账号可能会被管理员限制 Colab、Drive 或外部分享；如果遇到权限问题，优先换个人账号或联系管理员。
+- 不要用多个账号绕过 Colab 资源限制，这属于 Colab 明确限制的行为。
+- 不要上传包含隐私、人脸、证件、商业机密的图片，除非你清楚数据合规要求。
+
+#### 创建第一个 Colab 训练 Notebook
+
+1. 打开 `https://colab.research.google.com/` 并登录 Google 账号。
+2. 点击 `New notebook`，或从菜单选择 `File -> New notebook`。
+3. 把文件名改成类似 `yolo_lab04_training.ipynb`。
+4. 选择 `Runtime -> Change runtime type`。
+5. 将 `Hardware accelerator` 设为 `GPU`，保存。
+6. 运行下面的检查单元：
+
+```python
+!nvidia-smi
+
+import torch
+print("cuda available:", torch.cuda.is_available())
+print("device:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU")
+```
+
+如果 `nvidia-smi` 不可用，可能是没有成功切到 GPU，或当前账号暂时拿不到 GPU。第一版 smoke run 可以临时用 CPU 跑小尺寸，但正式训练建议等待 GPU 可用或换 Kaggle/其他云 GPU。
+
+#### 在 Colab 安装 Ultralytics
+
+Colab 虚拟机每次重启后都可能需要重新安装依赖。把安装步骤写在 notebook 第一段：
+
+```python
+!pip -q install ultralytics
+
+from ultralytics import YOLO
+```
+
+然后确认版本：
+
+```python
+import ultralytics
+ultralytics.checks()
+```
+
+#### 准备数据：推荐使用 zip 上传到 Drive
+
+不要在 Google Drive 里直接读写成千上万个小文件。更稳的做法是：
+
+1. 本地把数据集打成 `dataset_v1.zip`。
+2. 上传到 Google Drive，例如：
+
+```text
+MyDrive/yolo_learning/dataset_v1.zip
+```
+
+3. 在 Colab 里挂载 Drive：
+
+```python
+from google.colab import drive
+drive.mount("/content/drive")
+```
+
+4. 把 zip 复制到 Colab 本地运行时并解压：
+
+```python
+!mkdir -p /content/yolo_learning
+!cp "/content/drive/MyDrive/yolo_learning/dataset_v1.zip" /content/yolo_learning/
+!unzip -q /content/yolo_learning/dataset_v1.zip -d /content/yolo_learning/dataset_v1
+```
+
+5. 检查 `dataset.yaml` 是否存在：
+
+```python
+from pathlib import Path
+
+data_yaml = Path("/content/yolo_learning/dataset_v1/dataset.yaml")
+print(data_yaml.exists(), data_yaml)
+```
+
+如果输出是 `False`，先不要训练。用 `!find /content/yolo_learning -maxdepth 3 -type f | head -50` 检查实际解压结构，再修正路径。
+
+#### Colab smoke run
+
+先跑 3 轮小尺寸训练，确认路径、标签和 GPU 都可用：
+
+```python
+from ultralytics import YOLO
+
+model = YOLO("yolo11n.pt")
+model.train(
+    data=str(data_yaml),
+    epochs=3,
+    imgsz=320,
+    batch=4,
+    project="/content/yolo_runs",
+    name="smoke_v1",
+)
+```
+
+如果这里失败，常见原因是：
+
+- `dataset.yaml` 路径不对。
+- `train` 或 `val` 指向的图片目录不存在。
+- 标签坐标不在 0 到 1。
+- `class_id` 超出 `names` 范围。
+- batch 太大导致显存不足。
+
+先修这些问题，再进入正式训练。
+
+#### Colab 正式训练
+
+smoke run 通过后，再跑正式实验：
+
+```python
+model = YOLO("yolo11n.pt")
+model.train(
+    data=str(data_yaml),
+    epochs=50,
+    imgsz=640,
+    batch=8,
+    project="/content/yolo_runs",
+    name="custom_yolo_v1",
+)
+```
+
+如果出现显存不足，按这个顺序降级：
+
+1. 把 `batch=8` 改成 `batch=4` 或 `batch=2`。
+2. 把 `imgsz=640` 改成 `imgsz=512` 或 `imgsz=416`。
+3. 确认使用的是 `yolo11n.pt` 这类 nano 权重。
+
+#### 保存训练结果到 Drive
+
+Colab 运行时会回收，所以训练结束后要立刻复制结果：
+
+```python
+!mkdir -p "/content/drive/MyDrive/yolo_learning/runs"
+!cp -r /content/yolo_runs/custom_yolo_v1 "/content/drive/MyDrive/yolo_learning/runs/"
+```
+
+至少确认这些文件已经在 Drive：
+
+- `weights/best.pt`
+- `weights/last.pt`
+- `results.csv`
+- `args.yaml`
+- 训练曲线图或预测示例图
+
+然后在实验日志里记录：
+
+```text
+platform: Google Colab
+notebook: yolo_lab04_training.ipynb
+dataset_zip: MyDrive/yolo_learning/dataset_v1.zip
+data_yaml: /content/yolo_learning/dataset_v1/dataset.yaml
+model: yolo11n.pt
+epochs: 50
+imgsz: 640
+batch: 8
+output: MyDrive/yolo_learning/runs/custom_yolo_v1
+```
+
+#### Colab 常见问题速查
+
+| 问题 | 可能原因 | 处理方式 |
+| --- | --- | --- |
+| 没有 GPU | 没切运行时，或免费资源暂时不可用 | `Runtime -> Change runtime type -> GPU`，等待资源恢复，或换 Kaggle/付费云 GPU |
+| 训练中断 | 空闲、网络断开、运行时到期 | 经常保存到 Drive，正式训练后立刻复制结果 |
+| Drive 读写很慢 | 直接从 Drive 读取大量小文件 | 上传 zip，复制到 `/content` 后本地解压训练 |
+| `No such file` | 解压路径和 `dataset.yaml` 写法不一致 | 用 `find` 检查真实目录结构 |
+| CUDA out of memory | batch/imgsz 太大 | 降低 `batch`，再降低 `imgsz` |
+| 指标异常低 | 标签错误或类别定义混乱 | 回到第 5 章做数据审计 |
 
 训练示例：
 
@@ -866,6 +1118,20 @@ precision 关心 FP：预测出来的里面有多少靠谱。
 recall 关心 FN：真实存在的里面有多少被找到。
 
 这两个指标经常互相拉扯。调低置信度阈值会提高召回，但可能带来更多误检；调高阈值会减少误检，但可能漏掉难样本。
+
+### Precision-Recall 曲线和 AP
+
+同一个模型在不同置信度阈值下，会得到不同的 precision 和 recall。把这些点连起来，就是 Precision-Recall 曲线。
+
+![Precision-Recall 曲线](../assets/precision_recall_curve.svg)
+
+如果阈值很高，模型只保留最有把握的框，precision 往往较高，但 recall 可能较低。
+
+如果阈值很低，模型会保留更多候选框，recall 可能提高，但误检也会增加，precision 可能下降。
+
+AP 可以粗略理解为 PR 曲线下方的面积。曲线越靠右上，说明模型能在不同阈值下同时保持较好的查准率和查全率。mAP 则是多个类别 AP 的平均。
+
+在项目里不要只追一个 mAP 数字。你还要看具体类别的 PR 曲线和错误案例：有些类别可能总体分数不错，但在某个关键场景下漏检严重。
 
 ### 错误案例比总分更重要
 
@@ -1316,5 +1582,9 @@ YOLO：You Only Look Once，一类实时目标检测模型。
 - Ultralytics Python Usage: https://docs.ultralytics.com/usage/python
 - Ultralytics Object Detection Dataset Format: https://docs.ultralytics.com/datasets/detect
 - Ultralytics CLI Usage: https://docs.ultralytics.com/usage/cli
+- Google Colab: https://colab.research.google.com/
+- Google Colab FAQ: https://research.google.com/colaboratory/faq.html
+- Create a Google Account: https://support.google.com/accounts/answer/27441
+- Ultralytics Google Colab Integration: https://docs.ultralytics.com/integrations/google-colab/
 - Original YOLO paper: https://arxiv.org/abs/1506.02640
 - 实验驱动课程设计模式：阅读材料、实验说明、评分命令和提交产物

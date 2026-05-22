@@ -18,3 +18,8 @@ The file [image2_prompts.md](image2_prompts.md) contains ready-to-use prompts fo
 | `dataset_layout.svg` | YOLO dataset folder and YAML structure |
 | `local_cloud_workflow.svg` | Local-light and cloud-heavy workflow |
 | `error_analysis_matrix.svg` | Common error buckets and next actions |
+| `feature_pyramid.svg` | Multi-scale feature maps for small/medium/large objects |
+| `detection_head_outputs.svg` | Detection head candidate outputs and filtering |
+| `loss_components.svg` | Training loss components and parameter updates |
+| `precision_recall_curve.svg` | Precision-recall tradeoff and AP intuition |
+| `augmentation_panel.svg` | Common data augmentation effects |

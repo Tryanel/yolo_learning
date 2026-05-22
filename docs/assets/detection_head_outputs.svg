@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" role="img" aria-labelledby="title desc">
+  <title id="title">Detection head outputs</title>
+  <desc id="desc">Feature map locations produce candidate boxes with class scores and confidence, then thresholds and NMS produce final detections.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#16324f"/></marker>
+    <style>
+      .bg{fill:#f7f3ea}.title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.body{font:18px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+      .label{font:700 22px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.small{font:16px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.code{font:18px Consolas,monospace;fill:#16324f}
+      .panel{fill:#fffdf7;stroke:#d8cdb8;stroke-width:2}.grid{fill:#e8f5f1;stroke:#0f766e;stroke-width:3}.line{stroke:#9de0d3;stroke-width:1}.arrow{stroke:#16324f;stroke-width:4;fill:none;marker-end:url(#arrow)}
+      .chip{fill:#fff1e8;stroke:#f4c5a9;stroke-width:2}
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="660"/>
+  <text x="70" y="72" class="title">检测头输出到底是什么</text>
+  <text x="70" y="108" class="body">检测头把特征图上的位置变成候选框，再经过阈值和 NMS 筛选成最终结果。</text>
+  <g transform="translate(80,170)">
+    <rect class="panel" width="280" height="330" rx="18"/>
+    <text x="34" y="48" class="label">特征图位置</text>
+    <rect x="58" y="88" width="164" height="164" rx="8" class="grid"/>
+    <path class="line" d="M99 88 V252 M140 88 V252 M181 88 V252 M58 129 H222 M58 170 H222 M58 211 H222"/>
+    <circle cx="140" cy="170" r="11" fill="#f36f45"/>
+    <text x="50" y="292" class="small">每个位置预测若干候选信息</text>
+  </g>
+  <path class="arrow" d="M380 335 H455"/>
+  <g transform="translate(485,170)">
+    <rect class="panel" width="300" height="330" rx="18"/>
+    <text x="34" y="48" class="label">候选输出</text>
+    <rect x="38" y="82" width="225" height="48" rx="10" class="chip"/><text x="58" y="113" class="code">box: x y w h</text>
+    <rect x="38" y="150" width="225" height="48" rx="10" class="chip"/><text x="58" y="181" class="code">class scores</text>
+    <rect x="38" y="218" width="225" height="48" rx="10" class="chip"/><text x="58" y="249" class="code">confidence</text>
+    <text x="38" y="304" class="small">不同实现的细节会变，核心都是“位置 + 类别 + 质量”。</text>
+  </g>
+  <path class="arrow" d="M805 335 H880"/>
+  <g transform="translate(910,170)">
+    <rect class="panel" width="230" height="330" rx="18"/>
+    <text x="30" y="48" class="label">筛选后结果</text>
+    <rect x="42" y="84" width="132" height="82" fill="none" stroke="#f36f45" stroke-width="5"/>
+    <text x="47" y="77" class="small">cup 0.91</text>
+    <rect x="70" y="142" width="95" height="62" fill="none" stroke="#0f766e" stroke-width="5"/>
+    <text x="74" y="229" class="small">phone 0.84</text>
+    <text x="34" y="284" class="small">conf 过滤 + NMS 去重</text>
+  </g>
+</svg>

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">YOLO loss components</title>
+  <desc id="desc">Training loss combines box quality, class prediction, and confidence or objectness quality, then updates model weights.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#16324f"/></marker>
+    <style>
+      .bg{fill:#fffdf7}.title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.body{font:18px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+      .label{font:700 22px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.small{font:16px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.code{font:19px Consolas,monospace;fill:#16324f}
+      .panel{fill:#f7f3ea;stroke:#d8cdb8;stroke-width:2}.box{fill:none;stroke-width:5}.pred{stroke:#f36f45}.gt{stroke:#0f766e}.arrow{stroke:#16324f;stroke-width:4;fill:none;marker-end:url(#arrow)}
+      .barbg{fill:#e8f5f1}.bar1{fill:#0f766e}.bar2{fill:#f36f45}.bar3{fill:#f4b942}
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="640"/>
+  <text x="70" y="72" class="title">损失函数如何推动学习</text>
+  <text x="70" y="108" class="body">训练时模型比较“预测”和“标签”的差距，把差距转成 loss，再反向更新参数。</text>
+  <g transform="translate(80,175)">
+    <rect class="panel" width="270" height="300" rx="18"/>
+    <text x="34" y="48" class="label">预测 vs 标签</text>
+    <rect x="70" y="95" width="125" height="92" class="box gt"/>
+    <rect x="98" y="123" width="125" height="92" class="box pred"/>
+    <text x="45" y="248" class="small">绿色：真实框</text>
+    <text x="45" y="278" class="small">橙色：预测框</text>
+  </g>
+  <path class="arrow" d="M370 325 H445"/>
+  <g transform="translate(475,175)">
+    <rect class="panel" width="300" height="300" rx="18"/>
+    <text x="34" y="48" class="label">Loss 组成</text>
+    <text x="36" y="98" class="small">框位置 / IoU 质量</text>
+    <rect x="36" y="112" width="210" height="20" rx="10" class="barbg"/><rect x="36" y="112" width="150" height="20" rx="10" class="bar1"/>
+    <text x="36" y="162" class="small">类别预测</text>
+    <rect x="36" y="176" width="210" height="20" rx="10" class="barbg"/><rect x="36" y="176" width="95" height="20" rx="10" class="bar2"/>
+    <text x="36" y="226" class="small">置信度 / 目标质量</text>
+    <rect x="36" y="240" width="210" height="20" rx="10" class="barbg"/><rect x="36" y="240" width="125" height="20" rx="10" class="bar3"/>
+  </g>
+  <path class="arrow" d="M795 325 H870"/>
+  <g transform="translate(900,175)">
+    <rect class="panel" width="230" height="300" rx="18"/>
+    <text x="30" y="58" class="label">反向传播</text>
+    <text x="30" y="112" class="code">loss ↓</text>
+    <text x="30" y="156" class="small">调整模型参数</text>
+    <text x="30" y="198" class="small">下一轮预测更接近标签</text>
+    <path d="M64 246 C122 205 157 230 168 168" stroke="#0f766e" stroke-width="6" fill="none"/>
+    <polygon points="168,168 153,183 174,190" fill="#0f766e"/>
+  </g>
+</svg>

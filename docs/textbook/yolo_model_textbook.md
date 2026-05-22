@@ -317,11 +317,32 @@ If small objects are missed, the issue may involve feature scale, input resoluti
 
 The model does not judge every original pixel independently. It converts the image into smaller, more abstract feature maps. You can think of feature maps as clue maps: some respond to edges, some to texture, and some to shape combinations.
 
+![Feature maps and multi-scale detection](../assets/feature_pyramid.svg)
+
 Large objects can often be recognized on low-resolution, semantic features. Small objects need more fine detail. Multi-scale fusion connects those two needs:
 
 ```text
 small objects need detail; large objects need semantics; multi-scale fusion joins them
 ```
+
+### What the Detection Head Outputs
+
+The detection head does not directly output a rendered image. It first creates many candidate detections. A useful mental model is:
+
+```text
+candidate box + class scores + object quality / confidence
+```
+
+![Detection head candidate outputs](../assets/detection_head_outputs.svg)
+
+The model produces candidates across multiple feature scales. Post-processing turns them into human-readable detections:
+
+1. Remove candidates below the confidence threshold.
+2. Convert coordinates back to the original image scale.
+3. Use NMS to remove duplicates.
+4. Return final `class, confidence, box` results.
+
+Different YOLO implementations compute object quality, class score, and box regression details differently. For this course, keep the abstraction: the model produces many candidates, then filters them.
 
 ### What Training Learns
 
@@ -331,7 +352,18 @@ Training is not simply memorizing images. The model repeatedly adjusts parameter
 - Box error: the predicted box does not overlap the true box enough.
 - Confidence error: the model is too confident where no object exists, or not confident enough where one does.
 
+![YOLO loss components](../assets/loss_components.svg)
+
 These errors become a training loss. A lower loss usually means the model fits the training data better, but it does not guarantee generalization. That is why validation metrics and error cases matter.
+
+More mechanically, training repeats four steps:
+
+1. Forward pass: the model predicts using current parameters.
+2. Loss calculation: predictions are compared to labels.
+3. Backpropagation: the optimizer computes useful parameter directions.
+4. Parameter update: the next prediction should move closer to the labels.
+
+Loss is not a mysterious grade. It is an optimizable expression of how far predictions are from labels. In detection, it usually cares about box quality, class prediction, and object confidence or quality.
 
 ### Pretrained Weights
 
@@ -575,6 +607,24 @@ There is no universal number, but phases help:
 
 If you have many classes, each class needs enough examples. A first project with 2-3 clear classes is usually better than a first project with 20 vague classes.
 
+### What Data Augmentation Does
+
+Training often uses augmentations such as scaling, cropping, rotation, color jitter, and Mosaic.
+
+![Data augmentation examples](../assets/augmentation_panel.svg)
+
+Augmentation does not create truly new real-world evidence. It helps the model see reasonable variations:
+
+- the same object farther or closer
+- slightly tilted camera angles
+- brighter or darker lighting
+- partially cropped objects
+- backgrounds not identical to the original images
+
+Augmentation cannot replace real data. If the target scene is night surveillance and the dataset only contains daytime photos, brightness changes are usually not enough. Collect real night examples.
+
+Do not make augmentation too extreme. Strong augmentation can create unnatural images and teach patterns that will not appear in deployment. Start with framework defaults, then adjust after error analysis.
+
 ### Dataset Versioning
 
 Do not keep changing data without naming versions. Use a simple convention:
@@ -609,6 +659,176 @@ If data quality is unstable, longer training usually just learns the mistakes mo
 Training adjusts model weights so predictions fit your dataset. Cloud training is recommended when local hardware is weak.
 
 ![Local-light and cloud-heavy workflow](../assets/local_cloud_workflow.svg)
+
+### Google Colab Example
+
+Google Colab entry point:
+
+```text
+https://colab.research.google.com/
+```
+
+Colab is a browser-based cloud Jupyter Notebook environment. It is useful for this course because your local machine only needs a browser while training runs on a cloud runtime. You can save notebooks in Google Drive and use a GPU when one is available.
+
+Important boundaries:
+
+- Colab requires a Google Account.
+- Free compute is not guaranteed or unlimited.
+- GPU/TPU availability and type can change.
+- Idle notebooks can disconnect, and runtimes can be recycled.
+- Files under `/content` belong to the current runtime and may disappear.
+- Save important notebooks, datasets, and outputs to Google Drive or GitHub.
+
+#### Account and Registration Notes
+
+If you can sign in to Gmail, Google Drive, or YouTube, you usually already have a Google Account that can be used with Colab.
+
+If not, create one from:
+
+```text
+https://accounts.google.com/signup
+```
+
+Use a personal account if a school or company account blocks Colab, Drive mounting, or external sharing. Add recovery information so you do not lose access to training files. Do not use multiple accounts to bypass Colab usage limits, and do not upload sensitive images unless you understand the privacy and compliance requirements.
+
+#### Create a Training Notebook
+
+1. Open `https://colab.research.google.com/` and sign in.
+2. Create a new notebook.
+3. Rename it, for example `yolo_lab04_training.ipynb`.
+4. Choose `Runtime -> Change runtime type`.
+5. Set `Hardware accelerator` to `GPU`.
+6. Run a quick hardware check:
+
+```python
+!nvidia-smi
+
+import torch
+print("cuda available:", torch.cuda.is_available())
+print("device:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU")
+```
+
+If `nvidia-smi` fails, GPU was not attached or is temporarily unavailable. You can do a tiny CPU smoke test, but real training should wait for GPU or move to another cloud option.
+
+#### Install Ultralytics
+
+Colab runtimes are temporary, so keep dependency installation as the first notebook cell:
+
+```python
+!pip -q install ultralytics
+
+from ultralytics import YOLO
+```
+
+Then verify:
+
+```python
+import ultralytics
+ultralytics.checks()
+```
+
+#### Prepare Data with Drive and Zip Files
+
+For many small files, do not train directly from Google Drive. A more stable pattern is:
+
+1. Zip the dataset locally as `dataset_v1.zip`.
+2. Upload it to Drive, for example:
+
+```text
+MyDrive/yolo_learning/dataset_v1.zip
+```
+
+3. Mount Drive:
+
+```python
+from google.colab import drive
+drive.mount("/content/drive")
+```
+
+4. Copy and unzip into the local runtime:
+
+```python
+!mkdir -p /content/yolo_learning
+!cp "/content/drive/MyDrive/yolo_learning/dataset_v1.zip" /content/yolo_learning/
+!unzip -q /content/yolo_learning/dataset_v1.zip -d /content/yolo_learning/dataset_v1
+```
+
+5. Check the dataset YAML:
+
+```python
+from pathlib import Path
+
+data_yaml = Path("/content/yolo_learning/dataset_v1/dataset.yaml")
+print(data_yaml.exists(), data_yaml)
+```
+
+If this prints `False`, inspect the extracted tree before training.
+
+#### Colab Smoke Run
+
+Run a short training job first:
+
+```python
+model = YOLO("yolo11n.pt")
+model.train(
+    data=str(data_yaml),
+    epochs=3,
+    imgsz=320,
+    batch=4,
+    project="/content/yolo_runs",
+    name="smoke_v1",
+)
+```
+
+Fix path, label, class id, dependency, or GPU problems here before spending time on a full run.
+
+#### Full Training Run
+
+After the smoke run passes:
+
+```python
+model = YOLO("yolo11n.pt")
+model.train(
+    data=str(data_yaml),
+    epochs=50,
+    imgsz=640,
+    batch=8,
+    project="/content/yolo_runs",
+    name="custom_yolo_v1",
+)
+```
+
+If you hit GPU memory errors, lower `batch`, then lower `imgsz`, and stay with nano weights.
+
+#### Save Results Back to Drive
+
+Copy outputs immediately after training:
+
+```python
+!mkdir -p "/content/drive/MyDrive/yolo_learning/runs"
+!cp -r /content/yolo_runs/custom_yolo_v1 "/content/drive/MyDrive/yolo_learning/runs/"
+```
+
+Confirm that Drive contains:
+
+- `weights/best.pt`
+- `weights/last.pt`
+- `results.csv`
+- `args.yaml`
+- training plots or prediction examples
+
+Your experiment log should include platform, notebook name, dataset zip path, `dataset.yaml` path, model, epochs, image size, batch size, and output path.
+
+#### Colab Troubleshooting
+
+| Problem | Likely cause | Fix |
+| --- | --- | --- |
+| No GPU | runtime not set or free GPU unavailable | set GPU runtime, wait, or use Kaggle/paid cloud GPU |
+| Training interrupted | idle timeout, network, runtime recycling | save to Drive often and copy outputs immediately |
+| Drive reads slowly | many small files read from Drive | copy a zip to `/content` and unzip locally |
+| `No such file` | extracted tree differs from `dataset.yaml` | inspect with `find` and fix paths |
+| CUDA out of memory | batch/imgsz too large | reduce `batch`, then `imgsz` |
+| Metrics look wrong | labels or class definitions are bad | return to dataset audit |
 
 The typical training call is:
 
@@ -762,6 +982,20 @@ Detection evaluation checks both category and location.
 - False negative: a real object was missed.
 
 Precision is sensitive to false positives. Recall is sensitive to false negatives. Lowering the confidence threshold often improves recall but may hurt precision; raising it often does the opposite.
+
+### Precision-Recall Curve and AP
+
+The same model produces different precision and recall values at different confidence thresholds. Connecting those points gives the precision-recall curve.
+
+![Precision-recall curve](../assets/precision_recall_curve.svg)
+
+With a high confidence threshold, the model keeps only its strongest detections. Precision often rises, but recall may fall.
+
+With a low confidence threshold, the model keeps more candidates. Recall may rise, but false positives can increase and precision may fall.
+
+AP is roughly the area under the precision-recall curve. A curve closer to the top-right is better. mAP averages AP across classes.
+
+In real projects, do not chase only one mAP number. Inspect per-class curves and error cases. A class can have a decent overall score while still failing in a critical scene.
 
 ### Error Buckets
 
@@ -1197,5 +1431,9 @@ Chapter 7:
 - Ultralytics Python Usage: https://docs.ultralytics.com/usage/python
 - Ultralytics Object Detection Dataset Format: https://docs.ultralytics.com/datasets/detect
 - Ultralytics CLI Usage: https://docs.ultralytics.com/usage/cli
+- Google Colab: https://colab.research.google.com/
+- Google Colab FAQ: https://research.google.com/colaboratory/faq.html
+- Create a Google Account: https://support.google.com/accounts/answer/27441
+- Ultralytics Google Colab Integration: https://docs.ultralytics.com/integrations/google-colab/
 - Original YOLO paper: https://arxiv.org/abs/1506.02640
 - Lab-based course design pattern: reading, lab handout, grading command, and hand-in artifact

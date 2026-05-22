@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">Precision-recall curve</title>
+  <desc id="desc">A precision-recall curve shows the tradeoff between conservative and permissive confidence thresholds.</desc>
+  <style>
+    .bg{fill:#f7f3ea}.title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.body{font:18px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+    .label{font:700 22px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.small{font:16px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}.axis{stroke:#172026;stroke-width:3}.grid{stroke:#d8cdb8;stroke-width:1}
+    .curve{stroke:#0f766e;stroke-width:7;fill:none}.area{fill:#9de0d3;fill-opacity:.32}.dot{fill:#f36f45}
+  </style>
+  <rect class="bg" width="1200" height="640"/>
+  <text x="70" y="72" class="title">Precision-Recall 曲线</text>
+  <text x="70" y="108" class="body">调节置信度阈值，会在“少误检”和“少漏检”之间移动。AP 是曲线下方的综合面积。</text>
+  <g transform="translate(120,160)">
+    <line x1="0" y1="360" x2="760" y2="360" class="axis"/>
+    <line x1="0" y1="360" x2="0" y2="0" class="axis"/>
+    <path class="grid" d="M0 288 H760 M0 216 H760 M0 144 H760 M0 72 H760 M152 0 V360 M304 0 V360 M456 0 V360 M608 0 V360"/>
+    <path class="area" d="M0 40 C110 48 190 80 280 125 C385 178 470 240 600 300 C675 332 725 346 760 354 L760 360 L0 360 Z"/>
+    <path class="curve" d="M0 40 C110 48 190 80 280 125 C385 178 470 240 600 300 C675 332 725 346 760 354"/>
+    <circle cx="155" cy="66" r="9" class="dot"/><text x="174" y="62" class="small">高 conf：误检少，召回低</text>
+    <circle cx="560" cy="282" r="9" class="dot"/><text x="580" y="280" class="small">低 conf：找得多，误检多</text>
+    <text x="333" y="410" class="label">Recall</text>
+    <text x="-80" y="185" class="label" transform="rotate(-90 -80 185)">Precision</text>
+  </g>
+  <g transform="translate(930,215)">
+    <text x="0" y="0" class="label">读图方法</text>
+    <text x="0" y="45" class="small">曲线越靠右上越好</text>
+    <text x="0" y="85" class="small">AP 约等于曲线下面积</text>
+    <text x="0" y="125" class="small">不同阈值对应不同点</text>
+    <text x="0" y="165" class="small">真实项目要结合误检成本</text>
+  </g>
+</svg>

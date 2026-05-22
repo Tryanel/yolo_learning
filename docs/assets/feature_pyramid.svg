@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">Feature pyramid and multi-scale detection</title>
+  <desc id="desc">An input image becomes feature maps at multiple scales for small, medium, and large object detection.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#16324f"/></marker>
+    <style>
+      .bg{fill:#fffdf7}.title{font:700 34px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.body{font:18px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+      .label{font:700 22px 'Microsoft YaHei',Arial,sans-serif;fill:#172026}.small{font:16px 'Microsoft YaHei',Arial,sans-serif;fill:#667085}
+      .panel{fill:#f7f3ea;stroke:#d8cdb8;stroke-width:2}.map{fill:#e8f5f1;stroke:#0f766e;stroke-width:3}.grid{stroke:#9de0d3;stroke-width:1}
+      .arrow{stroke:#16324f;stroke-width:4;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="650"/>
+  <text x="70" y="72" class="title">特征图与多尺度检测</text>
+  <text x="70" y="108" class="body">图片经过主干网络后变成不同大小的特征图：高分辨率保留细节，低分辨率语义更强。</text>
+  <g transform="translate(80,170)">
+    <rect class="panel" width="260" height="310" rx="18"/>
+    <rect x="48" y="56" width="164" height="120" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+    <circle cx="92" cy="96" r="18" fill="#f4b942"/>
+    <rect x="130" y="118" width="50" height="34" fill="#0f766e"/>
+    <text x="45" y="225" class="label">输入图片</text>
+    <text x="45" y="260" class="small">像素级信息最多</text>
+  </g>
+  <path class="arrow" d="M360 325 H455"/>
+  <g transform="translate(485,145)">
+    <rect class="panel" width="610" height="370" rx="22"/>
+    <text x="38" y="52" class="label">Feature Pyramid</text>
+    <text x="38" y="86" class="small">同一张图片被压缩成多种尺度的线索地图</text>
+    <g transform="translate(60,125)">
+      <rect class="map" width="170" height="170" rx="8"/>
+      <path class="grid" d="M34 0 V170 M68 0 V170 M102 0 V170 M136 0 V170 M0 34 H170 M0 68 H170 M0 102 H170 M0 136 H170"/>
+      <text x="18" y="215" class="label">P3 细节多</text>
+      <text x="18" y="245" class="small">适合小目标</text>
+    </g>
+    <g transform="translate(270,150)">
+      <rect class="map" width="130" height="130" rx="8"/>
+      <path class="grid" d="M32 0 V130 M64 0 V130 M96 0 V130 M0 32 H130 M0 64 H130 M0 96 H130"/>
+      <text x="0" y="190" class="label">P4 平衡</text>
+      <text x="0" y="220" class="small">适合中等目标</text>
+    </g>
+    <g transform="translate(455,175)">
+      <rect class="map" width="90" height="90" rx="8"/>
+      <path class="grid" d="M30 0 V90 M60 0 V90 M0 30 H90 M0 60 H90"/>
+      <text x="-8" y="165" class="label">P5 语义强</text>
+      <text x="-8" y="195" class="small">适合大目标</text>
+    </g>
+  </g>
+</svg>
